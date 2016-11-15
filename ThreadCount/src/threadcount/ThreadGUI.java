@@ -5,7 +5,6 @@ import java.awt.*;
 import static java.awt.Component.BOTTOM_ALIGNMENT;
 import javax.swing.*;
 import javax.swing.border.*;
-import java.awt.*;
 
 class ThreadGUI extends JPanel {
     public ThreadGUI(){
@@ -27,23 +26,123 @@ class ThreadGUI extends JPanel {
         buttonAndComponent.add(createYAlignmentExample(true));
         tabbedPane.addTab("  Sales  ", buttonAndComponent);
         
-        JPanel reportRow = new JPanel();
-        reportRow.add(createReportWindow(true));
-        tabbedPane.addTab("  Reports  ", reportRow);
+        JPanel reportPanel = new JPanel();
+        reportPanel.add(createReportPanel(true));
+        tabbedPane.addTab("  Reports  ", reportPanel);
         
-        JPanel inventoryRow = new JPanel();
-        inventoryRow.add(createReportWindow(true));
-        tabbedPane.addTab("  Inventory  ", inventoryRow);
-        
+        JPanel inventoryPanel = new JPanel();
+        inventoryPanel.add(createInventoryPanel(true));
+        tabbedPane.addTab("  Inventory  ", inventoryPanel);
         
         //Add tabbedPane to this panel.
         add(tabbedPane, BorderLayout.CENTER);
-        
-        
     }
-    protected JPanel createReportWindow(boolean doItRight) {
+    
+    protected JPanel createReportPanel(boolean makePanel){ 
+        JPanel pane = new JPanel();//Creates main panel on tab
+        //Main container with border
+        JComponent component = new JPanel();
+        //Component is panel within main component
+        JComponent topComponent = new JPanel();
+        JComponent bottomComponent = new JPanel();
+        //initializing GUI features
+        JLabel displayLabel = new JLabel("Display Reports");
+        JLabel reportLabel = new JLabel("Export Reports");
+        JButton inventoryButton = new JButton("Inventory");
+        JButton customerButton = new JButton("Customers");
+        JButton SalesMonthButton = new JButton("Sales/Month");
+        JButton SalesAllButton = new JButton("All Sales");
+        JButton bestsellersButton = new JButton("Bestsellers");
+        JButton inventoryReportButton = new JButton("Inventory");
+        JButton salesReportButton = new JButton("Sales");
+        JButton customerReportButton = new JButton("Customers");
+        JScrollPane reportPane = new JScrollPane();
+        //dimension of main component container
+        Dimension size = new Dimension(600,500);
+        Dimension sizeMax = new Dimension (1000, 800);
+        component.setMaximumSize(sizeMax);
+        component.setPreferredSize(size);
+        component.setMinimumSize(size);
+        component.setLayout(new BorderLayout());//layout of main container
+        topComponent.setLayout(new FlowLayout());//layout of subcontainer
+        bottomComponent.setLayout(new FlowLayout());
+        //initializes containers
+        String title;
+        if (makePanel) {
+            title = "Reports";
+        } else {
+            title = "Mismatched";
+        }
+        //placing components
+        pane.setBorder(BorderFactory.createTitledBorder(title));
+        pane.add(component);
+        component.add(reportPane, BorderLayout.CENTER);
+        //adds top component to Borderlayout North
+        topComponent.add(displayLabel);
+        topComponent.add(inventoryButton);
+        topComponent.add(customerButton);
+        topComponent.add(SalesMonthButton);
+        topComponent.add(SalesAllButton);
+        topComponent.add(bestsellersButton);
+        component.add(topComponent, BorderLayout.PAGE_START);
+        bottomComponent.add(reportLabel);
+        bottomComponent.add(inventoryReportButton);
+        bottomComponent.add(salesReportButton);
+        bottomComponent.add(customerReportButton);
+        component.add(bottomComponent, BorderLayout.PAGE_END);
+        return pane;
+    }
+    protected JPanel createInventoryPanel(boolean makePanel){
+        JPanel pane = new JPanel();//Creates main panel on tab
+        //Main container with border
+        JComponent component = new JPanel();
+        //These two components are panels within component
+        JComponent topComponent = new JPanel();
+        JComponent bottomComponent = new JPanel();
+        //initializing GUI features
+        JLabel quantityLabel = new JLabel("Enter new Quantity");
+        JTextField searchText = new JTextField(12);
+        JTextField quantityText = new JTextField(4);
+        JButton searchButton = new JButton("Search");
+        JButton changeButton = new JButton("Change Quantity");
+        JButton displayAllButton = new JButton("Display all Inventory");
+        JButton loadButton = new JButton("Load From File");
+        JScrollPane inventoryPane = new JScrollPane();
+        //dimension of main component container
+        Dimension size = new Dimension(600,500);
+        Dimension sizeMax = new Dimension (1000, 800);
+        component.setMaximumSize(sizeMax);
+        component.setPreferredSize(size);
+        component.setMinimumSize(size);
+        component.setLayout(new BorderLayout());//layout of main container
+        topComponent.setLayout(new FlowLayout());//layout of subcontainer
+        bottomComponent.setLayout(new FlowLayout());//layout of subcontainer
+        //initializes containers
+        String title;
+        if (makePanel) {
+            title = "Search Inventory";
+        } else {
+            title = "Mismatched";
+        }
+        //placing components
+        pane.setBorder(BorderFactory.createTitledBorder(title));
+        pane.add(component);
+        component.add(inventoryPane, BorderLayout.CENTER);
+        topComponent.add(searchText);
+        topComponent.add(searchButton);
+        topComponent.add(displayAllButton);
+        //adds top component to Borderlayout North
+        component.add(topComponent, BorderLayout.PAGE_START);
+        bottomComponent.add(quantityLabel);
+        bottomComponent.add(quantityText);
+        bottomComponent.add(changeButton);
+        bottomComponent.add(loadButton);
+        //adds bottom Component to Borderlayout South
+        component.add(bottomComponent, BorderLayout.PAGE_END);
+        return pane;
+    }
+    protected JPanel createReportWindow(boolean makePanel) {
         JPanel pane = new JPanel();
-
         JComponent component = new JPanel();
         Dimension size = new Dimension(150,100);
         component.setMaximumSize(size);
@@ -59,7 +158,7 @@ class ThreadGUI extends JPanel {
 
         JLabel label = new JLabel("This is a JLabel");
         String title;
-        if (doItRight) {
+        if (makePanel) {
             title = "Matched";
             label.setAlignmentX(CENTER_ALIGNMENT);
         } else {
