@@ -1,50 +1,342 @@
 package threadcount;
-//Ian Chrisman
+//ThreadGUI Class
+//This class creates the GUI and all tabbed panes
+//Final Programming Project
+////////////////////////////////////////////////////////////////////////////////
+//
+//
+//15 Nov 2016
+//GUI 1.0 is complete.  We may refine it a little bit.  Not sure how to 
+//handle deletes yet.  I may need to add a JTextBox to enter the Customer
+//Index or Catalog index, then hit delete.  Not sure if we can actually select 
+//the item from a JScrollPane.
+//
+//
+////////////////////////////////////////////////////////////////////////////////
 
 import java.awt.*;
-import static java.awt.Component.BOTTOM_ALIGNMENT;
 import javax.swing.*;
-import javax.swing.border.*;
 
-class ThreadGUI extends JPanel {
-    public ThreadGUI(){
+class ThreadGUI extends JPanel { // Begin ThreadGUI Class
+    public ThreadGUI(){ //begin constructor
         super(new BorderLayout());
         JTabbedPane tabbedPane = new JTabbedPane();
         
-        JPanel customerRow = new JPanel();        
-        customerRow.add(createButtonRow(false));
-        customerRow.add(createButtonRow(true));
-        tabbedPane.addTab("  Customer  ", customerRow);
+        JPanel customerPanel = new JPanel();// Calls Customer Method    
+            customerPanel.add(createCustomerPanel(true));
+            customerPanel.setBackground(new Color(253,226,190));
+            tabbedPane.addTab("  Customer  ", customerPanel);
         
-        JPanel catalogRow = new JPanel();
-        catalogRow.add(createLabelAndComponent(false));
-        catalogRow.add(createLabelAndComponent(true));
-        tabbedPane.addTab("  Catalog  ", catalogRow);
+        JPanel catalogPanel = new JPanel();// Calls Catalog Method
+            catalogPanel.add(createCatalogPanel(true));
+            catalogPanel.setBackground(new Color(253,226,190));
+            tabbedPane.addTab("  Catalog  ", catalogPanel);
         
-        JPanel buttonAndComponent = new JPanel();
-        buttonAndComponent.add(createYAlignmentExample(false));
-        buttonAndComponent.add(createYAlignmentExample(true));
-        tabbedPane.addTab("  Sales  ", buttonAndComponent);
+        JPanel salesPanel = new JPanel(); // Calls Sales Method
+            salesPanel.add(createSalesPanel(true));
+            salesPanel.setBackground(new Color(253,226,190));
+            tabbedPane.addTab("  Sales  ", salesPanel);
         
-        JPanel reportPanel = new JPanel();
-        reportPanel.add(createReportPanel(true));
-        tabbedPane.addTab("  Reports  ", reportPanel);
+        JPanel reportPanel = new JPanel(); // Calls Report Method
+            reportPanel.add(createReportPanel(true));
+            reportPanel.setBackground(new Color(253,226,190));
+            tabbedPane.addTab("  Reports  ", reportPanel);
         
-        JPanel inventoryPanel = new JPanel();
-        inventoryPanel.add(createInventoryPanel(true));
-        tabbedPane.addTab("  Inventory  ", inventoryPanel);
-        
+        JPanel inventoryPanel = new JPanel(); // Calls Inventory Method
+            inventoryPanel.add(createInventoryPanel(true));
+            inventoryPanel.setBackground(new Color(253,226,190));
+            tabbedPane.addTab("  Inventory  ", inventoryPanel);
         //Add tabbedPane to this panel.
         add(tabbedPane, BorderLayout.CENTER);
-    }
+            tabbedPane.setBackground(new Color(255,178,102));
+    } // end ThreadGUI constructor
     
-    protected JPanel createReportPanel(boolean makePanel){ 
-        JPanel pane = new JPanel();//Creates main panel on tab
-        //Main container with border
+    public static void ThreadGUI() {
+    }    
+    
+    public static void createGUI(){ //begin CreateGui method
+        //Window Set up
+        JFrame frame = new JFrame("ThreadCounts");    
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //Content Pane
+        ThreadGUI threadPane = new ThreadGUI();
+        threadPane.setBackground(new Color(255,190,120));
+        threadPane.setOpaque(true);
+        frame.setContentPane(threadPane);
+        frame.pack();
+        frame.setVisible(true);
+        System.out.println("got here creategui");
+    }    
+    
+    protected JPanel createCustomerPanel(boolean makePanel){ 
+        //Creating Panels
+        JPanel pane = new JPanel();//Main Panel, its like a tree.  Sub  panel to sub panel
+            JComponent component = new JPanel();
+            JComponent centerComponent = new JPanel();
+                JComponent centerSalesComponent = new JPanel();
+            JComponent rightComponent = new JPanel();
+                JComponent rightCartComponent = new JPanel();
+                    JComponent rightGridComponent = new JPanel();
+                    JComponent rightFlowComponent = new JPanel();
+        //initializing GUI features
+        JLabel lastNameLabel = new JLabel("Last Name:");
+        JLabel firstNameLabel = new JLabel("First Name:");
+        JLabel addressLabel = new JLabel("Address:");
+        JLabel emailLabel = new JLabel("Email:");
+        JLabel phoneLabel = new JLabel("Phone:");
+        JLabel addCustomerLabel = new JLabel("       Add New Customer");
+        JLabel searchCustomerLabel = new JLabel("       Search ");
+        JTextField lastNameText = new JTextField(6);
+        JTextField firstNameText = new JTextField(6);
+        JTextField addressText = new JTextField(6);
+        JTextField emailText = new JTextField(6);
+        JTextField phoneText = new JTextField(6);
+        JTextField searchCustomerText = new JTextField(10);
+        JButton addCustomerButton = new JButton("Add");
+        JButton deleteCustomerButton = new JButton("Delete");
+        JButton customerSearchButton = new JButton(" Search ");
+        JScrollPane shoppingCart = new JScrollPane();
+        //dimensions of containers
+        Dimension size = new Dimension(600,225);
+        Dimension size2 = new Dimension (300, 225);
+        component.setPreferredSize(size);
+        //Adjusting Layouts of components
+        component.setLayout(new BorderLayout());//layout of main container
+            centerComponent.setLayout(new BorderLayout());// Center sub container
+                centerSalesComponent.setLayout(new GridLayout(5, 2));
+            rightComponent.setPreferredSize(size2);
+            rightComponent.setLayout(new BorderLayout());
+                rightCartComponent.setLayout(new BorderLayout());
+                    rightGridComponent.setLayout(new FlowLayout());     
+                    rightFlowComponent.setLayout(new FlowLayout());
+        //boolean that is called from constructor
+        String title;
+        if (makePanel) {
+            title = "Customer Database";
+        } else {
+            title = "";
+        }
+        //placing components
+        pane.setBorder(BorderFactory.createTitledBorder(title));
+        pane.setBackground(new Color(255,234,206));
+        pane.add(component);
+            component.add(centerComponent, BorderLayout.CENTER);
+                centerComponent.add(centerSalesComponent, BorderLayout.CENTER);
+                centerComponent.add(addCustomerButton, BorderLayout.PAGE_END);
+                centerComponent.add(addCustomerLabel, BorderLayout.PAGE_START);
+                centerComponent.setBackground(new Color(255,245,230));
+                    centerSalesComponent.setBackground(new Color(255,245,230));
+                    centerSalesComponent.add(lastNameLabel);
+                    centerSalesComponent.add(lastNameText);
+                    centerSalesComponent.add(firstNameLabel);
+                    centerSalesComponent.add(firstNameText);
+                    centerSalesComponent.add(addressLabel);
+                    centerSalesComponent.add(addressText);
+                    centerSalesComponent.add(emailLabel);
+                    centerSalesComponent.add(emailText);
+                    centerSalesComponent.add(phoneLabel);
+                    centerSalesComponent.add(phoneText);
+            component.add(rightComponent, BorderLayout.LINE_END);
+                rightComponent.add(searchCustomerLabel, BorderLayout.PAGE_START);
+                rightComponent.add(rightCartComponent, BorderLayout.CENTER);
+                rightComponent.setBackground(new Color(255,245,230));
+                    rightCartComponent.add(shoppingCart, BorderLayout.CENTER);
+                    rightCartComponent.add(rightGridComponent, BorderLayout.PAGE_START);
+                        rightGridComponent.setBackground(new Color(255,245,230));
+                        rightGridComponent.add(searchCustomerText);
+                        rightGridComponent.add(customerSearchButton);
+                    rightCartComponent.add(rightFlowComponent, BorderLayout.PAGE_END);
+                        rightFlowComponent.add(deleteCustomerButton);
+                        rightFlowComponent.setBackground(new Color(255,245,230));
+        return pane;
+    }// End Customer Panel Method
+    
+    protected JPanel createCatalogPanel(boolean makePanel){ //Begin Catalog Method
+        //Creating Panels
+        JPanel pane = new JPanel();//Main Panel, its like a tree.  Sub  panel to sub panel
         JComponent component = new JPanel();
-        //Component is panel within main component
-        JComponent topComponent = new JPanel();
-        JComponent bottomComponent = new JPanel();
+            JComponent centerComponent = new JPanel();
+                JComponent centerSalesComponent = new JPanel();
+                JComponent centerBottomComponent = new JPanel();
+            JComponent rightComponent = new JPanel();
+                JComponent rightCartComponent = new JPanel();
+                    JComponent rightGridComponent = new JPanel();
+                    JComponent rightFlowComponent = new JPanel();
+        //initializing GUI features
+        JLabel styleLabel = new JLabel("Style:");
+        JLabel colorLabel = new JLabel("Color:");
+        JLabel sizeLabel = new JLabel("Size:");
+        JLabel collectionLabel = new JLabel("Collection:");
+        JLabel QuantityLabel = new JLabel("Quantity:");
+        JLabel addClothingLabel = new JLabel("       Add New Item");
+        JLabel searchClothingLabel = new JLabel("       Item Search ");
+        JTextField styleText = new JTextField(6);
+        JTextField colorNameText = new JTextField(6);
+        JTextField collectionText = new JTextField(6);
+        JTextField quantityText = new JTextField(6);
+        JTextField searchClothingText = new JTextField(10);
+        JComboBox sizeBox = new JComboBox();
+        JButton addClothingButton = new JButton("Add");
+        JButton deleteClothingButton = new JButton("Delete");
+        JButton clothingSearchButton = new JButton(" Search ");
+        JButton loadInventoryButton = new JButton ("Load");
+        JScrollPane shoppingCart = new JScrollPane();
+        //dimensions of containers
+        Dimension size = new Dimension(600,225);
+        Dimension size2 = new Dimension (300, 225);
+        component.setPreferredSize(size);
+        //Adjusting Layouts of components
+        component.setLayout(new BorderLayout());//layout of main container
+            centerComponent.setLayout(new BorderLayout());// Center sub container
+                centerSalesComponent.setLayout(new GridLayout(5, 2));
+                centerBottomComponent.setLayout(new FlowLayout());
+            rightComponent.setPreferredSize(size2);
+            rightComponent.setLayout(new BorderLayout());
+                rightCartComponent.setLayout(new BorderLayout());
+                    rightGridComponent.setLayout(new FlowLayout());     
+                    rightFlowComponent.setLayout(new FlowLayout());
+        //boolean that is called from constructor
+        String title;
+        if (makePanel) {
+            title = "Clothing Database";
+        } else {
+            title = "";
+        }
+        //placing components
+        pane.setBorder(BorderFactory.createTitledBorder(title));
+        pane.setBackground(new Color(255,234,206));
+        pane.add(component);
+            component.add(centerComponent, BorderLayout.CENTER);
+                centerComponent.add(centerSalesComponent, BorderLayout.CENTER);
+                centerComponent.add(centerBottomComponent, BorderLayout.PAGE_END);
+                centerComponent.setBackground(new Color(255,245,230));
+                    centerBottomComponent.add(addClothingButton);
+                    centerBottomComponent.add(loadInventoryButton);
+                    centerBottomComponent.setBackground(new Color(255,245,230));
+                centerComponent.add(addClothingLabel, BorderLayout.PAGE_START);
+                    centerSalesComponent.add(styleLabel);
+                    centerSalesComponent.add(styleText);
+                    centerSalesComponent.add(colorLabel);
+                    centerSalesComponent.add(colorNameText);
+                    centerSalesComponent.add(sizeLabel);
+                    centerSalesComponent.add(sizeBox);
+                    centerSalesComponent.add(collectionLabel);
+                    centerSalesComponent.add(collectionText);
+                    centerSalesComponent.add(QuantityLabel);
+                    centerSalesComponent.add(quantityText);
+                    centerSalesComponent.setBackground(new Color(255,245,230));
+            component.add(rightComponent, BorderLayout.LINE_END);
+                rightComponent.add(searchClothingLabel, BorderLayout.PAGE_START);
+                rightComponent.add(rightCartComponent, BorderLayout.CENTER);
+                rightComponent.setBackground(new Color(255,245,230));
+                    rightCartComponent.add(shoppingCart, BorderLayout.CENTER);
+                    rightCartComponent.add(rightGridComponent, BorderLayout.PAGE_START);
+                    rightCartComponent.setBackground(new Color(255,245,230));
+                        rightGridComponent.add(searchClothingText);
+                        rightGridComponent.add(clothingSearchButton);
+                        rightGridComponent.setBackground(new Color(255,245,230));
+                    rightCartComponent.add(rightFlowComponent, BorderLayout.PAGE_END);
+                        rightFlowComponent.add(deleteClothingButton);
+                        rightFlowComponent.setBackground(new Color(255,245,230));
+        return pane;
+    } // End of Clothing Database
+    
+    protected JPanel createSalesPanel(boolean makePanel){ //Begin Sales Method
+        //Creating Panels
+        JPanel pane = new JPanel();//Main Panel, its like a tree.  Sub  panel to sub panel
+        JComponent component = new JPanel();
+            JComponent centerComponent = new JPanel();
+                JComponent centerSalesComponent = new JPanel();
+            JComponent rightComponent = new JPanel();
+                JComponent rightCartComponent = new JPanel();
+                    JComponent rightGridComponent = new JPanel();
+                    JComponent rightFlowComponent = new JPanel();
+        //initializing GUI features
+        JLabel customerLabel = new JLabel("Customer:");
+        JLabel itemLabel = new JLabel("Item:");
+        JLabel sizeLabel = new JLabel("Size:");
+        JLabel costLabel = new JLabel("Cost:");
+        JLabel quantityLabel = new JLabel("Quantity:");
+        JLabel addSaleLabel = new JLabel("  Add Sale Item  ");
+        JLabel addCartLabel = new JLabel("  Cart  ");
+        JLabel sizeLabel1 = new JLabel("Size:");
+        JLabel itemLabel1 = new JLabel("Item:");
+        JLabel costLabel1 = new JLabel("Cost:");
+        JLabel quantityLabel1 = new JLabel("Quantity:");
+        JTextField customerText = new JTextField(6);
+        JComboBox itemBox = new JComboBox();
+        JComboBox sizeBox = new JComboBox();
+        JTextField costText = new JTextField(6);
+        JTextField quantityText = new JTextField(6);
+        JTextField totalText = new JTextField (6);
+        JButton addSaleButton = new JButton("Add to Cart");
+        JButton completeSaleButton = new JButton ("Complete Sale");
+        JScrollPane shoppingCart = new JScrollPane();
+        //dimension of main component container
+        Dimension size = new Dimension(600,225);
+        Dimension size2 = new Dimension (300, 225);
+        component.setPreferredSize(size);
+        //Adjusting Layouts of components
+        component.setLayout(new BorderLayout());//layout of main container
+            centerComponent.setLayout(new BorderLayout());// Center sub container
+                centerSalesComponent.setLayout(new GridLayout(5, 2));
+            rightComponent.setPreferredSize(size2);
+            rightComponent.setLayout(new BorderLayout());
+                rightCartComponent.setLayout(new BorderLayout());
+                    rightGridComponent.setLayout(new GridLayout(1, 3));     
+                    rightFlowComponent.setLayout(new FlowLayout());
+        //boolean that is called from constructor
+        String title;
+        if (makePanel) {
+            title = "Sales";
+        } else {
+            title = "";
+        }
+        //placing components
+        pane.setBorder(BorderFactory.createTitledBorder(title));
+        pane.setBackground(new Color(255,234,206));
+        pane.add(component);
+            component.add(centerComponent, BorderLayout.CENTER);
+                centerComponent.add(centerSalesComponent, BorderLayout.CENTER);
+                centerComponent.add(addSaleButton, BorderLayout.PAGE_END);
+                centerComponent.add(addSaleLabel, BorderLayout.PAGE_START);
+                centerComponent.setBackground(new Color(255,245,230));
+                    centerSalesComponent.add(customerLabel);
+                    centerSalesComponent.add(customerText);
+                    centerSalesComponent.add(itemLabel);
+                    centerSalesComponent.add(itemBox);
+                    centerSalesComponent.add(sizeLabel);
+                    centerSalesComponent.add(sizeBox);
+                    centerSalesComponent.add(costLabel);
+                    centerSalesComponent.add(costText);
+                    centerSalesComponent.add(quantityLabel);
+                    centerSalesComponent.add(quantityText);
+                    centerSalesComponent.setBackground(new Color(255,245,230));
+            component.add(rightComponent, BorderLayout.LINE_END);
+                rightComponent.add(addCartLabel, BorderLayout.PAGE_START);
+                rightComponent.add(rightCartComponent, BorderLayout.CENTER);
+                rightComponent.setBackground(new Color(255,245,230));
+                    rightCartComponent.add(shoppingCart, BorderLayout.CENTER);
+                    rightCartComponent.add(rightGridComponent, BorderLayout.PAGE_START);
+                    rightCartComponent.setBackground(new Color(255,245,230));
+                        rightGridComponent.add(quantityLabel1);
+                        rightGridComponent.add(itemLabel1);
+                        rightGridComponent.add(sizeLabel1);
+                        rightGridComponent.add(costLabel1);
+                        rightGridComponent.setBackground(new Color(255,245,230));
+                    rightCartComponent.add(rightFlowComponent, BorderLayout.PAGE_END);
+                        rightFlowComponent.add(completeSaleButton);
+                        rightFlowComponent.add(totalText);
+                        rightFlowComponent.setBackground(new Color(255,245,230));
+        return pane;
+    }// end sales panel method
+    
+    protected JPanel createReportPanel(boolean makePanel){ // begin report panel method
+        //creating panels
+        JPanel pane = new JPanel();//Main Panel, its like a tree.  Sub  panel to sub panel
+        JComponent component = new JPanel();
+            JComponent topComponent = new JPanel();
+            JComponent bottomComponent = new JPanel();
         //initializing GUI features
         JLabel displayLabel = new JLabel("Display Reports");
         JLabel reportLabel = new JLabel("Export Reports");
@@ -59,14 +351,15 @@ class ThreadGUI extends JPanel {
         JScrollPane reportPane = new JScrollPane();
         //dimension of main component container
         Dimension size = new Dimension(600,500);
-        Dimension sizeMax = new Dimension (1000, 800);
+        Dimension sizeMax = new Dimension (1000, 700);
         component.setMaximumSize(sizeMax);
         component.setPreferredSize(size);
         component.setMinimumSize(size);
+        //Adjusting Layouts of components
         component.setLayout(new BorderLayout());//layout of main container
-        topComponent.setLayout(new FlowLayout());//layout of subcontainer
-        bottomComponent.setLayout(new FlowLayout());
-        //initializes containers
+            topComponent.setLayout(new FlowLayout());//layout of subcontainer
+            bottomComponent.setLayout(new FlowLayout());
+        //Boolean called from constructor
         String title;
         if (makePanel) {
             title = "Reports";
@@ -75,30 +368,31 @@ class ThreadGUI extends JPanel {
         }
         //placing components
         pane.setBorder(BorderFactory.createTitledBorder(title));
+        pane.setBackground(new Color(255,234,206));
         pane.add(component);
-        component.add(reportPane, BorderLayout.CENTER);
-        //adds top component to Borderlayout North
-        topComponent.add(displayLabel);
-        topComponent.add(inventoryButton);
-        topComponent.add(customerButton);
-        topComponent.add(SalesMonthButton);
-        topComponent.add(SalesAllButton);
-        topComponent.add(bestsellersButton);
-        component.add(topComponent, BorderLayout.PAGE_START);
-        bottomComponent.add(reportLabel);
-        bottomComponent.add(inventoryReportButton);
-        bottomComponent.add(salesReportButton);
-        bottomComponent.add(customerReportButton);
-        component.add(bottomComponent, BorderLayout.PAGE_END);
+            component.add(reportPane, BorderLayout.CENTER);
+            component.add(topComponent, BorderLayout.PAGE_START);
+                topComponent.add(displayLabel);
+                topComponent.add(inventoryButton);
+                topComponent.add(customerButton);
+                topComponent.add(SalesMonthButton);
+                topComponent.add(SalesAllButton);
+                topComponent.add(bestsellersButton);
+                topComponent.setBackground(new Color(255,245,230));
+            component.add(bottomComponent, BorderLayout.PAGE_END);
+                bottomComponent.add(reportLabel);
+                bottomComponent.add(inventoryReportButton);
+                bottomComponent.add(salesReportButton);
+                bottomComponent.add(customerReportButton);
+                bottomComponent.setBackground(new Color(255,245,230));
         return pane;
-    }
-    protected JPanel createInventoryPanel(boolean makePanel){
+    } // End Report Method
+    protected JPanel createInventoryPanel(boolean makePanel){ //Begin Inventory Method
+        //Creating Panels
         JPanel pane = new JPanel();//Creates main panel on tab
-        //Main container with border
-        JComponent component = new JPanel();
-        //These two components are panels within component
-        JComponent topComponent = new JPanel();
-        JComponent bottomComponent = new JPanel();
+            JComponent component = new JPanel();
+                JComponent topComponent = new JPanel();
+                JComponent bottomComponent = new JPanel();
         //initializing GUI features
         JLabel quantityLabel = new JLabel("Enter new Quantity");
         JTextField searchText = new JTextField(12);
@@ -110,14 +404,15 @@ class ThreadGUI extends JPanel {
         JScrollPane inventoryPane = new JScrollPane();
         //dimension of main component container
         Dimension size = new Dimension(600,500);
-        Dimension sizeMax = new Dimension (1000, 800);
+        Dimension sizeMax = new Dimension (1000, 700);
         component.setMaximumSize(sizeMax);
         component.setPreferredSize(size);
         component.setMinimumSize(size);
+        //adjusting layouts
         component.setLayout(new BorderLayout());//layout of main container
         topComponent.setLayout(new FlowLayout());//layout of subcontainer
         bottomComponent.setLayout(new FlowLayout());//layout of subcontainer
-        //initializes containers
+        //initializes containers boolean
         String title;
         if (makePanel) {
             title = "Search Inventory";
@@ -126,175 +421,20 @@ class ThreadGUI extends JPanel {
         }
         //placing components
         pane.setBorder(BorderFactory.createTitledBorder(title));
+        pane.setBackground(new Color(255,234,206));
         pane.add(component);
-        component.add(inventoryPane, BorderLayout.CENTER);
-        topComponent.add(searchText);
-        topComponent.add(searchButton);
-        topComponent.add(displayAllButton);
-        //adds top component to Borderlayout North
-        component.add(topComponent, BorderLayout.PAGE_START);
-        bottomComponent.add(quantityLabel);
-        bottomComponent.add(quantityText);
-        bottomComponent.add(changeButton);
-        bottomComponent.add(loadButton);
-        //adds bottom Component to Borderlayout South
-        component.add(bottomComponent, BorderLayout.PAGE_END);
+            component.add(inventoryPane, BorderLayout.CENTER);
+            component.add(topComponent, BorderLayout.PAGE_START);
+                topComponent.add(searchText);
+                topComponent.add(searchButton);
+                topComponent.add(displayAllButton);
+                topComponent.setBackground(new Color(255,245,230));
+            component.add(bottomComponent, BorderLayout.PAGE_END);
+                bottomComponent.add(quantityLabel);
+                bottomComponent.add(quantityText);
+                bottomComponent.add(changeButton);
+                bottomComponent.add(loadButton);
+                bottomComponent.setBackground(new Color(255,245,230));
         return pane;
-    }
-    protected JPanel createReportWindow(boolean makePanel) {
-        JPanel pane = new JPanel();
-        JComponent component = new JPanel();
-        Dimension size = new Dimension(150,100);
-        component.setMaximumSize(size);
-        component.setPreferredSize(size);
-        component.setMinimumSize(size);
-        TitledBorder border = new TitledBorder(
-                                  new LineBorder(Color.black),
-                                  "A JPanel",
-                                  TitledBorder.CENTER,
-                                  TitledBorder.BELOW_TOP);
-        border.setTitleColor(Color.black);
-        component.setBorder(border);
-
-        JLabel label = new JLabel("This is a JLabel");
-        String title;
-        if (makePanel) {
-            title = "Matched";
-            label.setAlignmentX(CENTER_ALIGNMENT);
-        } else {
-            title = "Mismatched";
-        }
-
-        pane.setBorder(BorderFactory.createTitledBorder(title));
-        pane.setLayout(new BoxLayout(pane, BoxLayout.Y_AXIS));
-        pane.add(label);
-        pane.add(component);
-        return pane;
-    }
-    protected JPanel createYAlignmentExample(boolean doItRight) {
-        JPanel pane = new JPanel();
-        String title;
-
-        JComponent component1 = new JPanel();
-        Dimension size = new Dimension(100, 50);
-        component1.setMaximumSize(size);
-        component1.setPreferredSize(size);
-        component1.setMinimumSize(size);
-        TitledBorder border = new TitledBorder(
-                                  new LineBorder(Color.black),
-                                  "A JPanel",
-                                  TitledBorder.CENTER,
-                                  TitledBorder.BELOW_TOP);
-        border.setTitleColor(Color.black);
-        component1.setBorder(border);
-
-        JComponent component2 = new JPanel();
-        size = new Dimension(100, 50);
-        component2.setMaximumSize(size);
-        component2.setPreferredSize(size);
-        component2.setMinimumSize(size);
-        border = new TitledBorder(new LineBorder(Color.black),
-                                  "A JPanel",
-                                  TitledBorder.CENTER,
-                                  TitledBorder.BELOW_TOP);
-        border.setTitleColor(Color.black);
-        component2.setBorder(border);
-
-        if (doItRight) {
-            title = "Matched";
-        } else {
-            component1.setAlignmentY(TOP_ALIGNMENT);
-            title = "Mismatched";
-        }
-
-        pane.setBorder(BorderFactory.createTitledBorder(title));
-        pane.setLayout(new BoxLayout(pane, BoxLayout.X_AXIS));
-        pane.add(component1);
-        pane.add(component2);
-        return pane;
-    }
-    
-    protected JPanel createLabelAndComponent(boolean doItRight) {
-        JPanel pane = new JPanel();
-
-        JComponent component = new JPanel();
-        Dimension size = new Dimension(300,500);
-        component.setMaximumSize(size);
-        component.setPreferredSize(size);
-        component.setMinimumSize(size);
-        TitledBorder border = new TitledBorder(
-                                  new LineBorder(Color.black),
-                                  "Results",
-                                  TitledBorder.CENTER,
-                                  TitledBorder.BELOW_TOP);
-        border.setTitleColor(Color.black);
-        component.setBorder(border);
-
-        JLabel label = new JLabel("I can add Text boxes, drop downs, whatever");
-        String title;
-        if (doItRight) {
-            title = "New Customer";
-            label.setAlignmentX(CENTER_ALIGNMENT);
-        } else {
-            title = "Search";
-            label.setAlignmentX(CENTER_ALIGNMENT);
-        }
-
-        pane.setBorder(BorderFactory.createTitledBorder(title));
-        pane.setLayout(new BoxLayout(pane, BoxLayout.Y_AXIS));
-        pane.add(label);
-        pane.add(component);
-        return pane;
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-        protected JPanel createButtonRow(boolean changeAlignment) {
-        JButton button1 = new JButton("A JButton");
-        button1.setVerticalTextPosition(AbstractButton.BOTTOM);
-        button1.setHorizontalTextPosition(AbstractButton.CENTER);
-
-        JButton button2 = new JButton("Another JButton");
-        button2.setVerticalTextPosition(AbstractButton.BOTTOM);
-        button2.setHorizontalTextPosition(AbstractButton.CENTER);
-
-        String title;
-        if (changeAlignment) {
-            title = "Desired";
-            button1.setAlignmentY(BOTTOM_ALIGNMENT);
-            button2.setAlignmentY(BOTTOM_ALIGNMENT);
-        } else {
-            title = "Default";
-        }
-
-        JPanel pane = new JPanel();
-        pane.setBorder(BorderFactory.createTitledBorder(title));
-        pane.setLayout(new BoxLayout(pane, BoxLayout.X_AXIS));
-        pane.add(button1);
-        pane.add(button2);
-        return pane;
-    }
-    public static void ThreadGUI() {
-
-    }
-    public static void createGUI(){
-    //Window Set up
-    JFrame frame = new JFrame("ThreadCounts");    
-    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    //Content Pane
-    ThreadGUI threadPane = new ThreadGUI();
-    threadPane.setOpaque(true);
-    frame.setContentPane(threadPane);
-    frame.pack();
-    frame.setVisible(true);
-    System.out.println("got here creategui");
-    }
+    }// end Inventory Method
 }
