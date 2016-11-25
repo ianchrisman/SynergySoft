@@ -20,6 +20,11 @@ import java.util.List;
 //and removed some of the duplicate functionality.  I believe all the basic 
 //requirements are covered.
 //
+//25 Nov 2016
+//Implemented Justin's code into the the Customer and Catalog Search fields, along
+//with the Customer and Inventory Reports.  You can now add, search, and display
+//reports for Customers and Catalog
+//
 ////////////////////////////////////////////////////////////////////////////////
 
 

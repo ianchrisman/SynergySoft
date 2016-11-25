@@ -5,6 +5,7 @@ package threadcount;
 
 
 import java.awt.*;
+import java.awt.event.*;
 import java.util.List;
 import javax.swing.*;
 
@@ -12,6 +13,9 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
     
     private Controller c = new Controller();
     JLabel blankLabel = new JLabel();
+    JButton inventoryButton, customerButton, customerSearchButton, catalogSearchButton;
+    JTextArea customerLog, catalogLog, salesLog, reportLog, inventoryLog;
+    JTextField searchCustomerText, searchCatalogText;
     
     public ThreadGUI(){ //begin constructor
 
@@ -46,6 +50,25 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         //Add tabbedPane to this panel.
         add(tabbedPane, BorderLayout.CENTER);
             tabbedPane.setBackground(new Color(255,178,102));
+            
+        //////Action Listeners/////
+        customerSearchButton.addActionListener(new ActionListener(){ 
+        @Override
+        public void actionPerformed(ActionEvent e){displayCustSearch ();}}); 
+        
+        catalogSearchButton.addActionListener(new ActionListener(){ 
+        @Override
+        public void actionPerformed(ActionEvent e){displayCatSearch ();}}); 
+        
+        inventoryButton.addActionListener(new ActionListener(){ 
+        @Override
+        public void actionPerformed(ActionEvent e){displayAllInvenReport ();}}); 
+        
+        customerButton.addActionListener(new ActionListener(){ 
+        @Override
+        public void actionPerformed(ActionEvent e){displayAllCustReport ();}}); 
+            
+            
     } // end ThreadGUI constructor
     
     public static void ThreadGUI() {
@@ -76,6 +99,7 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
                     JComponent rightGridComponent = new JPanel();
                     JComponent rightFlowComponent = new JPanel();
         //initializing GUI features
+
         JLabel lastNameLabel = new JLabel("Last Name:");
         JLabel firstNameLabel = new JLabel("First Name:");
         JLabel addressLabel = new JLabel("Address:");
@@ -90,7 +114,7 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         JTextField emailText = new JTextField(6);
         JTextField phoneText = new JTextField(6);
         JTextField customerIDText = new JTextField(8);
-        JTextField searchCustomerText = new JTextField(10);
+        searchCustomerText = new JTextField(10);
         JButton addCustomerButton = new JButton("Add");
                 addCustomerButton.addActionListener(
         		al -> {
@@ -104,16 +128,11 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         		}
         		);
         JButton deleteCustomerButton = new JButton("Delete");
-        JButton customerSearchButton = new JButton(" Search ");
-        customerSearchButton.addActionListener(
-        		al -> {
-        			List<Customer> matches = c.searchCustomerNameAny(searchCustomerText.getText());
-        			for (Customer customer : matches) {
-        				// Show it in the pane to the right
-        			}
-        		}
-        		);
-        JScrollPane shoppingCart = new JScrollPane();
+        customerSearchButton = new JButton(" Search ");
+        customerLog = new JTextArea(20,40);
+        customerLog.setMargin(new Insets(5,5,5,5));
+        customerLog.setEditable(false); 
+        JScrollPane shoppingCart = new JScrollPane(customerLog);
         //dimensions of containers
         Dimension size = new Dimension(800,300);
         Dimension size2 = new Dimension (500,300);
@@ -205,7 +224,7 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         JTextField costText = new JTextField(6);
         JTextField priceText = new JTextField(6);
         JTextField quantityText = new JTextField(6);
-        JTextField searchClothingText = new JTextField(10);
+        searchCatalogText = new JTextField(10);
         JTextField catalogIDText = new JTextField(8);
         JButton addClothingButton = new JButton("Add");
         addClothingButton.addActionListener(
@@ -215,9 +234,12 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         		}
         		);
         JButton deleteClothingButton = new JButton("Delete");
-        JButton clothingSearchButton = new JButton(" Search ");
+        catalogSearchButton = new JButton(" Search ");
+        catalogLog = new JTextArea(20,40);
+        catalogLog.setMargin(new Insets(5,5,5,5));
+        catalogLog.setEditable(false); 
         JButton loadInventoryButton = new JButton ("Load from File");
-        JScrollPane shoppingCart = new JScrollPane();
+        JScrollPane shoppingCart = new JScrollPane(catalogLog);
         //dimensions of containers
         Dimension size = new Dimension(800,375);
         Dimension size2 = new Dimension (500,375);
@@ -275,8 +297,8 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
                     rightCartComponent.add(shoppingCart, BorderLayout.CENTER);
                     rightCartComponent.add(rightGridComponent, BorderLayout.PAGE_START);
                     rightCartComponent.setBackground(new Color(255,245,230));
-                        rightGridComponent.add(searchClothingText);
-                        rightGridComponent.add(clothingSearchButton);
+                        rightGridComponent.add(searchCatalogText);
+                        rightGridComponent.add(catalogSearchButton);
                         rightGridComponent.setBackground(new Color(255,245,230));
                     rightCartComponent.add(rightFlowComponent, BorderLayout.PAGE_END);
                         rightFlowComponent.add(catalogIDLabel);
@@ -439,7 +461,7 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         return pane;
     }// end Inventory Method
     
-    protected JPanel createReportPanel(boolean makePanel){ // begin report panel method
+    public JPanel createReportPanel(boolean makePanel){ // begin report panel method
         //creating panels
         JPanel pane = new JPanel();//Main Panel, its like a tree.  Sub  panel to sub panel
         JComponent component = new JPanel();
@@ -448,17 +470,20 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         //initializing GUI features
         JLabel displayLabel = new JLabel("Display Reports");
         JLabel reportLabel = new JLabel("Export Reports");
-        JButton inventoryButton = new JButton("Inventory");
-        JButton customerButton = new JButton("Customers");
+        inventoryButton = new JButton("Inventory");
+        customerButton = new JButton("Customers");
         JButton SalesMonthButton = new JButton("Sales/Month");
         JButton SalesAllButton = new JButton("All Sales");
         JButton bestsellersButton = new JButton("Bestsellers");
         JButton inventoryReportButton = new JButton("Inventory");
         JButton salesReportButton = new JButton("Sales");
         JButton customerReportButton = new JButton("Customers");
-        JScrollPane reportPane = new JScrollPane();
+        reportLog = new JTextArea(20,40);
+        reportLog.setMargin(new Insets(5,5,5,5));
+        reportLog.setEditable(false); 
+        JScrollPane reportPane = new JScrollPane(reportLog);
         //dimension of main component container
-        Dimension size = new Dimension(600,500);
+        Dimension size = new Dimension(800,500);
         Dimension sizeMax = new Dimension (1000, 700);
         component.setMaximumSize(sizeMax);
         component.setPreferredSize(size);
@@ -494,5 +519,45 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
                 bottomComponent.add(customerReportButton);
                 bottomComponent.setBackground(new Color(255,245,230));
         return pane;
+        
+        
     } // End Report Method
+
+    void displayCustSearch (){
+        String cSearchString = searchCustomerText.getText();
+    	List<Customer> foundCustomers = c.searchCustomerNameAny(cSearchString);
+        System.out.println(cSearchString);
+    	customerLog.setText("Customer search rersults for: " + cSearchString + " \n");
+    	for (Customer cust : foundCustomers) {
+    		System.out.println(cust.toString());
+                customerLog.append(cust.toString());
+        }
+    } 
+    void displayCatSearch (){
+        String iSearchString = searchCatalogText.getText();
+    	List<Item> foundItems = c.searchItemStyle(iSearchString);
+        System.out.println(iSearchString);
+    	catalogLog.setText("Catalog search rersults for: " + iSearchString + " \n");
+    	for (Item item : foundItems) {
+    		System.out.println(item.toString());
+                catalogLog.append(item.toString());
+        }
+    } 
+    void displayAllInvenReport ()
+    {
+        List<Item> allItems = c.getAllItems();
+    	reportLog.setText("\nAll Items:\n");
+    	for (Item item : allItems) {
+    		reportLog.append(item.toString() + "\n");
+        }
+    }
+    void displayAllCustReport ()
+    {
+    	List<Customer> customers = c.getAllCustomers();
+        reportLog.setText("\nAll Customers:\n");
+    	for (Customer customer : customers) {
+    		reportLog.append(customer.toString() + "\n");
+    	}
+    }
+    
 }//end class ThreadGUI
