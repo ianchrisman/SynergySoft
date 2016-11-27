@@ -11,6 +11,10 @@ public class Item {
 	protected double price;
 	protected String imgUri;
 	protected long sku;
+        
+        Item() {
+        
+        }
 
 	public Item(String style, String color, String size, int quantity, double unitCost, double price, long sku) {
 		this.style = style;
