@@ -31,7 +31,12 @@ public class Customer {
 	
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("Customer: " + firstName + " " + lastName + " Address: " + address + " Email: " + email + " Phone: " + phoneNumber);
+		sb.append("ID#: " + id + "   Customer: " + firstName + " " + lastName + "   Address: " + address + "   Email: " + email + "   Phone: " + phoneNumber);
+		return sb.toString();
+	}
+        public String toStringSearch() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("\n\nID#:  " + id + "\nCustomer:  " + firstName + " " + lastName + "\nAddress:  " + address + "\nEmail:  " + email + "\nPhone:  " + phoneNumber);
 		return sb.toString();
 	}
 }

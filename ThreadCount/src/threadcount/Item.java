@@ -39,7 +39,16 @@ public class Item {
 	
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("Item Style: " + style + " Color: " + color + " Size: " + size + " Quantity: " + quantity + " Cost: $" + unitCost + " Price: $" + price + " SKU: " + sku);
+		sb.append("Item Style:  " + style + "  Color:  " + color + "  Size:  "
+                        + size + "  Quantity:  " + quantity + "  Cost:  $" + unitCost 
+                        + "  Price:  $" + price + "  SKU:  " + sku);
+		return sb.toString();
+	}
+	public String toStringSearch() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("\n\nItem Style:  " + style + "\nColor:  " + color + "\nSize:  "
+                        + size + "\nQuantity:  " + quantity + "\nCost:  $" + 
+                        unitCost + "\nPrice:  $" + price + "\nSKU:  " + sku);
 		return sb.toString();
 	}
 }

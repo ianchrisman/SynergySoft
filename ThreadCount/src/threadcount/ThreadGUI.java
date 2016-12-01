@@ -17,11 +17,13 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
     JButton inventoryButton, customerButton, customerSearchButton, 
             catalogSearchButton, addCustomerButton, addClothingButton,
             loadInventoryButton, SalesMonthButton, SalesAllButton, bestsellersButton, 
-            exportButton;
+            exportButton, displayAllInvenButton,searchInvenButton, changeQuantityButton,
+            deleteCustomerButton, deleteClothingButton;
     JTextArea customerLog, catalogLog, salesLog, reportLog, inventoryLog;
     JTextField searchCustomerText, searchCatalogText, lastNameText, firstNameText, 
             addressText, emailText, phoneText, styleText, colorText, sizeText, 
-            skuText, costText, priceText, quantityText;
+            skuText, costText, priceText, quantityText,searchInvenText,quantityInvenText,
+            skuInvenText,customerIDText, catalogIDText;
     JFileChooser chooser;
     Boolean isPressedCustomer, isPressedInventory, isPressedSales, isPressedMoSales, 
             isPressedBest;
@@ -67,11 +69,27 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         
         catalogSearchButton.addActionListener(new ActionListener(){ 
         @Override
-        public void actionPerformed(ActionEvent e){displayCatSearch ();}}); 
+        public void actionPerformed(ActionEvent e){displayCatSearch ();}});
+        
+        deleteCustomerButton.addActionListener(new ActionListener(){ 
+        @Override
+        public void actionPerformed(ActionEvent e){deleteCustomer ();}});
+        
+        deleteClothingButton.addActionListener(new ActionListener(){ 
+        @Override
+        public void actionPerformed(ActionEvent e){deleteCatalogItem ();}});
+        
+        searchInvenButton.addActionListener(new ActionListener(){ 
+        @Override
+        public void actionPerformed(ActionEvent e){displayInvenSearch ();}});
         
         inventoryButton.addActionListener(new ActionListener(){ 
         @Override
         public void actionPerformed(ActionEvent e){displayAllInvenReport ();}});
+        
+        displayAllInvenButton.addActionListener(new ActionListener(){ 
+        @Override
+        public void actionPerformed(ActionEvent e){displayAllInven ();}});
         
         exportButton.addActionListener (new ActionListener () {
         @Override
@@ -92,6 +110,10 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         loadInventoryButton.addActionListener (new ActionListener () {
         @Override
         public void actionPerformed (ActionEvent e) {loadCatalog ();}});
+        
+        changeQuantityButton.addActionListener (new ActionListener () {
+        @Override
+        public void actionPerformed (ActionEvent e) {changeInvenQuanity ();}});
         
     } // end ThreadGUI constructor
     
@@ -137,10 +159,10 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         addressText = new JTextField(6);
         emailText = new JTextField(6);
         phoneText = new JTextField(6);
-        JTextField customerIDText = new JTextField(8);
+        customerIDText = new JTextField(8);
         searchCustomerText = new JTextField(10);
         addCustomerButton = new JButton("Add");
-        JButton deleteCustomerButton = new JButton("Delete");
+        deleteCustomerButton = new JButton("Delete");
         customerSearchButton = new JButton(" Search ");
         customerLog = new JTextArea(20,40);
         customerLog.setMargin(new Insets(5,5,5,5));
@@ -238,9 +260,9 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         priceText = new JTextField(6);
         quantityText = new JTextField(6);
         searchCatalogText = new JTextField(10);
-        JTextField catalogIDText = new JTextField(8);
+        catalogIDText = new JTextField(8);
         addClothingButton = new JButton("Add");
-        JButton deleteClothingButton = new JButton("Delete");
+        deleteClothingButton = new JButton("Delete");
         catalogSearchButton = new JButton(" Search ");
         catalogLog = new JTextArea(20,40);
         catalogLog.setMargin(new Insets(5,5,5,5));
@@ -424,15 +446,18 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         //initializing GUI features
         JLabel quantityLabel = new JLabel("New Quantity:");
         JLabel skuLabel = new JLabel ("Enter SKU:");
-        JTextField searchText = new JTextField(12);
-        JTextField quantityText = new JTextField(4);
-        JTextField skuText = new JTextField(6);
-        JButton searchButton = new JButton("Search");
-        JButton changeButton = new JButton("Change Quantity");
-        JButton displayAllButton = new JButton("Display all Inventory");
-        JScrollPane inventoryPane = new JScrollPane();
+        searchInvenText = new JTextField(12);
+        quantityInvenText = new JTextField(4);
+        skuInvenText = new JTextField(6);
+        searchInvenButton = new JButton("Search");
+        changeQuantityButton = new JButton("Change Quantity");
+        displayAllInvenButton = new JButton("Display all Inventory");
+        inventoryLog = new JTextArea(20,40);
+        inventoryLog.setMargin(new Insets(5,5,5,5));
+        inventoryLog.setEditable(false); 
+        JScrollPane inventoryPane = new JScrollPane(inventoryLog);
         //dimension of main component container
-        Dimension size = new Dimension(600,500);
+        Dimension size = new Dimension(800,500);
         Dimension sizeMax = new Dimension (1000, 700);
         component.setMaximumSize(sizeMax);
         component.setPreferredSize(size);
@@ -454,16 +479,16 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         pane.add(component);
             component.add(inventoryPane, BorderLayout.CENTER);
             component.add(topComponent, BorderLayout.PAGE_START);
-                topComponent.add(displayAllButton);
-                topComponent.add(searchText);
-                topComponent.add(searchButton);
+                topComponent.add(displayAllInvenButton);
+                topComponent.add(searchInvenText);
+                topComponent.add(searchInvenButton);
                 topComponent.setBackground(new Color(255,245,230));
             component.add(bottomComponent, BorderLayout.PAGE_END);
                 bottomComponent.add(skuLabel);
-                bottomComponent.add(skuText);
+                bottomComponent.add(skuInvenText);
                 bottomComponent.add(quantityLabel);
-                bottomComponent.add(quantityText);
-                bottomComponent.add(changeButton);
+                bottomComponent.add(quantityInvenText);
+                bottomComponent.add(changeQuantityButton);
                 bottomComponent.setBackground(new Color(255,245,230));
         return pane;
     }// end Inventory Method
@@ -551,15 +576,18 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         i.sku = Long.parseLong(skuText.getText());
         c.addItem(i);
     }
-    
+    void changeInvenQuanity (){
+        //need to write controller method to modify
+        inventoryLog.setText("change quantity");
+    }
     void displayCustSearch (){
         String cSearchString = searchCustomerText.getText();
     	List<Customer> foundCustomers = c.searchCustomerNameAny(cSearchString);
         System.out.println(cSearchString);
     	customerLog.setText("Customer search rersults for: " + cSearchString + " \n");
     	for (Customer cust : foundCustomers) {
-    		System.out.println(cust.toString());
-                customerLog.append(cust.toString());
+    		System.out.println(cust.toStringSearch());
+                customerLog.append(cust.toStringSearch());
         }
     } 
     void displayCatSearch (){
@@ -568,10 +596,26 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         System.out.println(iSearchString);
     	catalogLog.setText("Catalog search rersults for: " + iSearchString + " \n");
     	for (Item item : foundItems) {
-    		System.out.println(item.toString());
-                catalogLog.append(item.toString());
+    		System.out.println(item.toStringSearch());
+                catalogLog.append(item.toStringSearch());
         }
     } 
+    void displayInvenSearch (){
+        String iSearchString = searchInvenText.getText();
+    	List<Item> foundItems = c.searchItemStyle(iSearchString);
+        System.out.println(iSearchString);
+    	inventoryLog.setText("Catalog search rersults for: " + iSearchString + " \n");
+    	for (Item item : foundItems) {
+    		System.out.println(item.toString());
+                inventoryLog.append(item.toString());
+        }
+    }
+    void deleteCustomer (){
+        //customerIDText
+    }
+    void deleteCatalogItem (){
+        //catalogIDText
+    }
     void exportReport (){
         if (isPressedInventory == true){
             System.out.println("Export Inventory");
@@ -598,6 +642,13 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         isPressedSales = false;
         isPressedMoSales = false; 
         isPressedBest = false;
+    }
+    void displayAllInven (){
+        List<Item> allItems = c.getAllItems();
+    	inventoryLog.setText("\nAll Items:\n");
+    	for (Item item : allItems) {
+    		inventoryLog.append(item.toString() + "\n");
+        }
     }
     void displayAllCustReport (){
     	List<Customer> customers = c.getAllCustomers();
