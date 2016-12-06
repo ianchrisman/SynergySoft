@@ -12,7 +12,7 @@ import java.io.*;
 
 class ThreadGUI extends JPanel { // Begin ThreadGUI Class
     
-    private Controller c = new Controller();
+    private static Controller c;
     JLabel blankLabel = new JLabel();
     JButton inventoryButton, customerButton, customerSearchButton, 
             catalogSearchButton, addCustomerButton, addClothingButton,
@@ -28,9 +28,13 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
     Boolean isPressedCustomer, isPressedInventory, isPressedSales, isPressedMoSales, 
             isPressedBest;
     
-    public ThreadGUI(){ //begin constructor
-
+    public ThreadGUI(Controller c){ //begin constructor
         super(new BorderLayout());
+        this.c = c;
+        /* Changed this a little bit, as multiple Controllers were being instantiated..
+        Now takes Controller a an Argument.
+        Controller is created in the Main class
+        */
         JTabbedPane tabbedPane = new JTabbedPane();
         
         JPanel customerPanel = new JPanel();// Calls Customer Method    
@@ -125,7 +129,7 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         JFrame frame = new JFrame("ThreadCounts");    
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //Content Pane
-        ThreadGUI threadPane = new ThreadGUI();
+        ThreadGUI threadPane = new ThreadGUI(c);
         threadPane.setBackground(new Color(255,190,120));
         threadPane.setOpaque(true);
         frame.setContentPane(threadPane);
@@ -363,7 +367,12 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         JLabel totalLabel= new JLabel(" Total:  ");
         JTextField customerText = new JTextField(6);
         JComboBox itemBox = new JComboBox();
+        
         JComboBox sizeBox = new JComboBox();
+        itemBox.setModel(new DefaultComboBoxModel(c.getUniqueStyleNames().toArray()));
+        itemBox.addActionListener(al -> {
+        	sizeBox.setModel(new DefaultComboBoxModel(c.getSizesForStyle(itemBox.getSelectedItem().toString()).toArray()));
+        });
         JTextField costText = new JTextField(6);
         JTextField quantityText = new JTextField(6);
         JTextField totalText = new JTextField (6);
@@ -550,6 +559,11 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         
         
     } // End Report Method
+    
+    protected void addToCart() {
+    	// Still need to do this
+    }
+    
     void addCustomer (){
         Customer cust = new Customer();
         cust.lastName = lastNameText.getText();
@@ -612,9 +626,13 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
     }
     void deleteCustomer (){
         //customerIDText
+    	int id = Integer.parseInt(customerIDText.getText());
+    	c.deleteCustomer(id);
     }
     void deleteCatalogItem (){
         //catalogIDText
+    	long sku = Long.parseLong(catalogIDText.getText());
+    	c.deleteItem(sku);
     }
     void exportReport (){
         if (isPressedInventory == true){

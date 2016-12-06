@@ -32,6 +32,7 @@ class ThreadCount {// Begin class ThreadCount
 
     public static void main(String[] args) {//Main Method
     	
+    	/*
     	// Justin's Controller Tests
     	Controller c = new Controller();
     	
@@ -67,8 +68,11 @@ class ThreadCount {// Begin class ThreadCount
     	
     	c.closeConnection();
     	// End Justin's Controller tests
-    	
-        ThreadGUI frame = new ThreadGUI();
-        ThreadGUI.createGUI();
+    	*/
+    	Controller c = new Controller(); // See notes in ThreadGUI's constructor -JJ
+        ThreadGUI frame = new ThreadGUI(c);
+        frame.createGUI();
+        //ThreadGUI.createGUI(); // Commented this out, threw the above line in -JJ
+
     }//End Main Method
 }// End Class ThreadCount
