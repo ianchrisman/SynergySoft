@@ -11,7 +11,7 @@ public class Controller {
 	
 	public Controller() {
 		// Constructor, sets up the DB connection
-		
+		conf.setDefaultCloseOperation(conf.EXIT_ON_CLOSE);
 		// Try to use Config's default values. If not, bring up Config's window.
 		boolean success = tryConnect();
 		while (!success) {
@@ -243,10 +243,12 @@ public class Controller {
 		try {
 			Statement s = c.createStatement();
 			ResultSet rs = s.executeQuery("SELECT id, style, color, size, quantity, unit_cost, price, sku FROM catalog ORDER BY style ASC, size ASC, color ASC");
-			while (rs.next()) {
-				Item i = new Item(rs.getInt("id"), rs.getString("style"), rs.getString("color"), rs.getString("size"), rs.getInt("quantity"), rs.getDouble("unit_cost"), rs.getDouble("price"), rs.getLong("sku"));
-				items.add(i);
-			}
+                        
+                                while (rs.next()) {
+                                        Item i = new Item(rs.getInt("id"), rs.getString("style"), rs.getString("color"), rs.getString("size"), rs.getInt("quantity"), rs.getDouble("unit_cost"), rs.getDouble("price"), rs.getLong("sku"));
+                                        items.add(i);
+                                }
+
 			rs.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -255,6 +257,7 @@ public class Controller {
 		
 		return items;
 	}
+
 	
 	protected void deleteItem(long skuToDelete) {
 		List<Item> matches = searchItemSku(skuToDelete);

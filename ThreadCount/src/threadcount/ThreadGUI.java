@@ -25,8 +25,8 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
             skuText, costText, priceText, quantityText,searchInvenText,quantityInvenText,
             skuInvenText,customerIDText, catalogIDText;
     JFileChooser chooser;
-    Boolean isPressedCustomer, isPressedInventory, isPressedSales, isPressedMoSales, 
-            isPressedBest;
+    boolean isPressedCustomer, isPressedInventory, isPressedSales, isPressedMoSales, 
+            isPressedBest = false;
     
     public ThreadGUI(Controller c){ //begin constructor
         super(new BorderLayout());
@@ -636,9 +636,45 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
     }
     void exportReport (){
         if (isPressedInventory == true){
-            System.out.println("Export Inventory");
+            chooser = new JFileChooser();
+            int returnVal = chooser.showSaveDialog(this);
+            if (returnVal == JFileChooser.APPROVE_OPTION){
+            try{
+                //File file = new File();
+                FileWriter fw = new FileWriter(chooser.getSelectedFile()+".csv");
+                List<Item> allItems = c.getAllItems();
+                fw.write("Style,Color,Size,Quantity,Wholesale Cost,Retail Price,SKU\n");
+                for (Item item : allItems) {
+                        fw.write(item.toStringReport() + "\n");
+                }
+                fw.close();
+            }   catch (IOException e){
+                e.printStackTrace();
+            }
+            isPressedInventory = false;
+            } else {
+                reportLog.append("\n\nCancelled File Open ");
+            }
         } else if (isPressedCustomer == true){
-            System.out.println("Export Customer");
+            chooser = new JFileChooser();
+            int returnVal = chooser.showSaveDialog(this);
+            if (returnVal == JFileChooser.APPROVE_OPTION){
+            try{
+                //File file = new File();
+                FileWriter fw = new FileWriter(chooser.getSelectedFile()+".csv");
+                List<Customer> customers = c.getAllCustomers();
+                fw.write("Customer ID:First Name:Last Name:Address:Email:Phone Number\n");
+                for (Customer customer : customers) {
+                        fw.write(customer.toStringReport() + "\n");
+                }
+                fw.close();
+            }   catch (IOException e){
+                e.printStackTrace();
+            }
+            isPressedInventory = false;
+            } else {
+                reportLog.append("\n\nCancelled File Open ");
+            }
         } else if (isPressedSales == true){
             System.out.println("Export All Sales");
         } else if (isPressedMoSales == true){
@@ -650,16 +686,16 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         }  
     }
     void displayAllInvenReport (){
-        List<Item> allItems = c.getAllItems();
-    	reportLog.setText("\nAll Items:\n");
-    	for (Item item : allItems) {
-    		reportLog.append(item.toString() + "\n");
-        }
         isPressedInventory = true;
         isPressedCustomer = false;
         isPressedSales = false;
         isPressedMoSales = false; 
         isPressedBest = false;
+        List<Item> allItems = c.getAllItems();
+    	reportLog.setText("\nAll Items:\n");
+    	for (Item item : allItems) {
+    		reportLog.append(item.toString() + "\n");
+        }
     }
     void displayAllInven (){
         List<Item> allItems = c.getAllItems();
@@ -669,34 +705,47 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         }
     }
     void displayAllCustReport (){
-    	List<Customer> customers = c.getAllCustomers();
-        reportLog.setText("\nAll Customers:\n");
-    	for (Customer customer : customers) {
-    		reportLog.append(customer.toString() + "\n");
-    	}
         isPressedInventory = false;
         isPressedCustomer = true;
         isPressedSales = false;
         isPressedMoSales = false; 
         isPressedBest = false;
+    	List<Customer> customers = c.getAllCustomers();
+        reportLog.setText("\nAll Customers:\n");
+    	for (Customer customer : customers) {
+    		reportLog.append(customer.toString() + "\n");
+    	}
     }
     
     void loadCatalog(){  
         chooser = new JFileChooser(".");
-        chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        //chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         int returnVal = chooser.showOpenDialog(this);
+        String line = "^M";//indicates end of csv line
+        String csvSplitBy = ",";
+        BufferedReader br = null;
+
         if (returnVal == JFileChooser.APPROVE_OPTION){
             try{
                 File file = chooser.getSelectedFile();
-                System.out.println("Got to open File");
-                FileReader fr = new FileReader(file.getName());
-                BufferedReader br = new BufferedReader(fr);
-            } catch (FileNotFoundException fnfe){
-                System.out.println("Exception Thrown");
+                br = new BufferedReader(new FileReader(file.getAbsoluteFile()));
+                while ((line = br.readLine()) != null) {
+                    String[] catalogArray = line.split(csvSplitBy);
+                    Item i = new Item();
+                    i.style = catalogArray[1];
+                    i.color = catalogArray[3];
+                    i.size = catalogArray[2];
+                    i.quantity = Integer.parseInt(catalogArray[4]);
+                    i.unitCost = Double.parseDouble(catalogArray[5]);
+                    i.price = Double.parseDouble(catalogArray[6]);
+                    i.sku = Long.parseLong(catalogArray[0]);
+                    c.addItem(i);
+                }
+            }  catch (IOException e){
+                System.out.println("Exception Thrown ioexception");
             }
         } else {
             System.out.println("Cancelled File Open ");
         }
     }
-    
 }//end class ThreadGUI

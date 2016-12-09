@@ -39,4 +39,9 @@ public class Customer {
 		sb.append("\n\nID#:  " + id + "\nCustomer:  " + firstName + " " + lastName + "\nAddress:  " + address + "\nEmail:  " + email + "\nPhone:  " + phoneNumber);
 		return sb.toString();
 	}
+	public String toStringReport() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(id +":"+ firstName +":"+ lastName +":"+ address+":"+ email +":"+ phoneNumber);
+		return sb.toString();
+	}
 }
