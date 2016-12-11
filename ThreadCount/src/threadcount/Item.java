@@ -51,4 +51,11 @@ public class Item {
                         unitCost + "\nPrice:  $" + price + "\nSKU:  " + sku);
 		return sb.toString();
 	}
+	public String toStringReport() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(style + "," + color + ","
+                        + size + "," + quantity + "," + unitCost 
+                        + "," + price + "," + sku);
+		return sb.toString();
+	}
 }

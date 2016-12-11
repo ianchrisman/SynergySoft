@@ -25,8 +25,8 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
             skuText, costText, priceText, quantityText,searchInvenText,quantityInvenText,
             skuInvenText,customerIDText, catalogIDText;
     JFileChooser chooser;
-    Boolean isPressedCustomer, isPressedInventory, isPressedSales, isPressedMoSales, 
-            isPressedBest;
+    boolean isPressedCustomer, isPressedInventory, isPressedSales, isPressedMoSales, 
+            isPressedBest = false;
     
     public ThreadGUI(Controller c){ //begin constructor
         super(new BorderLayout());
@@ -365,7 +365,11 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         JLabel costLabel1 = new JLabel("Cost:");
         JLabel quantityLabel1 = new JLabel("Quantity:");
         JLabel totalLabel= new JLabel(" Total:  ");
-        JTextField customerText = new JTextField(6);
+        JLabel salesColorLabel = new JLabel("Color:");
+        //JTextField customerText = new JTextField(6);
+        JComboBox customerBox = new JComboBox();
+        
+        customerBox.setModel(new DefaultComboBoxModel(c.getAllCustomers().toArray()));
         JComboBox itemBox = new JComboBox();
         
         JComboBox sizeBox = new JComboBox();
@@ -373,12 +377,41 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         itemBox.addActionListener(al -> {
         	sizeBox.setModel(new DefaultComboBoxModel(c.getSizesForStyle(itemBox.getSelectedItem().toString()).toArray()));
         });
+        JComboBox colorBox = new JComboBox();
+        sizeBox.addActionListener(al -> {
+        	colorBox.setModel(new DefaultComboBoxModel(c.getColorsForSelectedItemAndSize(itemBox.getSelectedItem().toString(), sizeBox.getSelectedItem().toString()).toArray()));
+        });
+        JTextField salesColorText = new JTextField(8);
+        
+        
+        //colorBox.setModel(new DefaultComboBoxModel(c.getColorsForSelectedItemAndSize(itemBox.getSelectedItem().toString(), sizeBox.getSelectedItem().toString()).toArray()));
         JTextField costText = new JTextField(6);
         JTextField quantityText = new JTextField(6);
         JTextField totalText = new JTextField (6);
         JButton addSaleButton = new JButton("Add to Cart");
+        salesLog = new JTextArea(20,40);
+        salesLog.setMargin(new Insets(5,5,5,5));
+        salesLog.setEditable(false);
+        JScrollPane shoppingCart = new JScrollPane(salesLog);
+        addSaleButton.addActionListener(al -> {
+        	int customerId = ((Customer)customerBox.getSelectedItem()).id;
+        	String style = (String)itemBox.getSelectedItem();
+        	String size = (String)sizeBox.getSelectedItem();
+        	String color = (String)colorBox.getSelectedItem();
+        	int quantity = Integer.parseInt(quantityText.getText());
+        	
+        	System.out.println("Customer: " + customerId + " Style: " + style + " Size: " + size + " Color: " + color + " Quantity: " + quantity);
+        	Item i = c.searchItemMulti(style, size, color);
+        	
+        	c.addToCart(customerId, i, quantity);
+        	totalText.setText(Double.toString(c.getCartTotal(customerId)));
+        	salesLog.setText(c.showCart(customerId));	
+        });
         JButton completeSaleButton = new JButton ("Complete Sale");
-        JScrollPane shoppingCart = new JScrollPane();
+        completeSaleButton.addActionListener(al -> {
+        	c.completeSale(((Customer)customerBox.getSelectedItem()).id);
+        	salesLog.setText("Sale Completed!");
+        });
         //dimension of main component container
         Dimension size = new Dimension(800,325);
         Dimension size2 = new Dimension (500, 225);
@@ -412,11 +445,14 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
                 centerComponent.add(addSaleLabel, BorderLayout.PAGE_START);
                 centerComponent.setBackground(new Color(255,245,230));
                     centerSalesComponent.add(customerLabel);
-                    centerSalesComponent.add(customerText);
+                    centerSalesComponent.add(customerBox);
                     centerSalesComponent.add(itemLabel);
                     centerSalesComponent.add(itemBox);
                     centerSalesComponent.add(sizeLabel);
                     centerSalesComponent.add(sizeBox);
+                    centerSalesComponent.add(salesColorLabel);
+                    //centerSalesComponent.add(salesColorText);
+                    centerSalesComponent.add(colorBox);
                     centerSalesComponent.add(costLabel);
                     centerSalesComponent.add(costText);
                     centerSalesComponent.add(quantityLabel);
@@ -636,9 +672,45 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
     }
     void exportReport (){
         if (isPressedInventory == true){
-            System.out.println("Export Inventory");
+            chooser = new JFileChooser();
+            int returnVal = chooser.showSaveDialog(this);
+            if (returnVal == JFileChooser.APPROVE_OPTION){
+            try{
+                //File file = new File();
+                FileWriter fw = new FileWriter(chooser.getSelectedFile()+".csv");
+                List<Item> allItems = c.getAllItems();
+                fw.write("Style,Color,Size,Quantity,Wholesale Cost,Retail Price,SKU\n");
+                for (Item item : allItems) {
+                        fw.write(item.toStringReport() + "\n");
+                }
+                fw.close();
+            }   catch (IOException e){
+                e.printStackTrace();
+            }
+            isPressedInventory = false;
+            } else {
+                reportLog.append("\n\nCancelled File Open ");
+            }
         } else if (isPressedCustomer == true){
-            System.out.println("Export Customer");
+            chooser = new JFileChooser();
+            int returnVal = chooser.showSaveDialog(this);
+            if (returnVal == JFileChooser.APPROVE_OPTION){
+            try{
+                //File file = new File();
+                FileWriter fw = new FileWriter(chooser.getSelectedFile()+".csv");
+                List<Customer> customers = c.getAllCustomers();
+                fw.write("Customer ID:First Name:Last Name:Address:Email:Phone Number\n");
+                for (Customer customer : customers) {
+                        fw.write(customer.toStringReport() + "\n");
+                }
+                fw.close();
+            }   catch (IOException e){
+                e.printStackTrace();
+            }
+            isPressedInventory = false;
+            } else {
+                reportLog.append("\n\nCancelled File Open ");
+            }
         } else if (isPressedSales == true){
             System.out.println("Export All Sales");
         } else if (isPressedMoSales == true){
@@ -650,16 +722,16 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         }  
     }
     void displayAllInvenReport (){
-        List<Item> allItems = c.getAllItems();
-    	reportLog.setText("\nAll Items:\n");
-    	for (Item item : allItems) {
-    		reportLog.append(item.toString() + "\n");
-        }
         isPressedInventory = true;
         isPressedCustomer = false;
         isPressedSales = false;
         isPressedMoSales = false; 
         isPressedBest = false;
+        List<Item> allItems = c.getAllItems();
+    	reportLog.setText("\nAll Items:\n");
+    	for (Item item : allItems) {
+    		reportLog.append(item.toString() + "\n");
+        }
     }
     void displayAllInven (){
         List<Item> allItems = c.getAllItems();
@@ -669,34 +741,47 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         }
     }
     void displayAllCustReport (){
-    	List<Customer> customers = c.getAllCustomers();
-        reportLog.setText("\nAll Customers:\n");
-    	for (Customer customer : customers) {
-    		reportLog.append(customer.toString() + "\n");
-    	}
         isPressedInventory = false;
         isPressedCustomer = true;
         isPressedSales = false;
         isPressedMoSales = false; 
         isPressedBest = false;
+    	List<Customer> customers = c.getAllCustomers();
+        reportLog.setText("\nAll Customers:\n");
+    	for (Customer customer : customers) {
+    		reportLog.append(customer.toString() + "\n");
+    	}
     }
     
     void loadCatalog(){  
         chooser = new JFileChooser(".");
-        chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        //chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         int returnVal = chooser.showOpenDialog(this);
+        String line = "^M";//indicates end of csv line
+        String csvSplitBy = ",";
+        BufferedReader br = null;
+
         if (returnVal == JFileChooser.APPROVE_OPTION){
             try{
                 File file = chooser.getSelectedFile();
-                System.out.println("Got to open File");
-                FileReader fr = new FileReader(file.getName());
-                BufferedReader br = new BufferedReader(fr);
-            } catch (FileNotFoundException fnfe){
-                System.out.println("Exception Thrown");
+                br = new BufferedReader(new FileReader(file.getAbsoluteFile()));
+                while ((line = br.readLine()) != null) {
+                    String[] catalogArray = line.split(csvSplitBy);
+                    Item i = new Item();
+                    i.style = catalogArray[1];
+                    i.color = catalogArray[3];
+                    i.size = catalogArray[2];
+                    i.quantity = Integer.parseInt(catalogArray[4]);
+                    i.unitCost = Double.parseDouble(catalogArray[5]);
+                    i.price = Double.parseDouble(catalogArray[6]);
+                    i.sku = Long.parseLong(catalogArray[0]);
+                    c.addItem(i);
+                }
+            }  catch (IOException e){
+                System.out.println("Exception Thrown ioexception");
             }
         } else {
             System.out.println("Cancelled File Open ");
         }
     }
-    
 }//end class ThreadGUI

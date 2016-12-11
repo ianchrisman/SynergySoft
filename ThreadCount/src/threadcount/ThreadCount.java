@@ -67,9 +67,20 @@ class ThreadCount {// Begin class ThreadCount
     	}
     	
     	c.closeConnection();
+    	
+    	------
+    	    	Item i = c.searchItemMulti("UMUC Hoodie", "Large", "Blue");
+    	System.out.println("JCT: Item found?:: " + i.toStringSearch());
+    	c.addToCart(99, i, 1);
+    	Item i2 = c.searchItemMulti("Skirt", "L", "Black");
+    	System.out.println("JCT: Item found?:: " + i2.toStringSearch());
+    	c.addToCart(99, i2, 2);
+    	System.out.println("Cart contents: " + c.showCart(99));
+    	c.completeSale(99);
     	// End Justin's Controller tests
     	*/
     	Controller c = new Controller(); // See notes in ThreadGUI's constructor -JJ
+    	
         ThreadGUI frame = new ThreadGUI(c);
         frame.createGUI();
         //ThreadGUI.createGUI(); // Commented this out, threw the above line in -JJ
