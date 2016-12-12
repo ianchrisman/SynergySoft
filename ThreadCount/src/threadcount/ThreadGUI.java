@@ -117,7 +117,7 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         
         changeQuantityButton.addActionListener (new ActionListener () {
         @Override
-        public void actionPerformed (ActionEvent e) {changeInvenQuanity ();}});
+        public void actionPerformed (ActionEvent e) {changeInvenQuantity ();}});
         
     } // end ThreadGUI constructor
     
@@ -365,7 +365,11 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         JLabel costLabel1 = new JLabel("Cost:");
         JLabel quantityLabel1 = new JLabel("Quantity:");
         JLabel totalLabel= new JLabel(" Total:  ");
-        JTextField customerText = new JTextField(6);
+        JLabel salesColorLabel = new JLabel("Color:");
+        //JTextField customerText = new JTextField(6);
+        JComboBox customerBox = new JComboBox();
+        
+        customerBox.setModel(new DefaultComboBoxModel(c.getAllCustomers().toArray()));
         JComboBox itemBox = new JComboBox();
         
         JComboBox sizeBox = new JComboBox();
@@ -373,12 +377,41 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         itemBox.addActionListener(al -> {
         	sizeBox.setModel(new DefaultComboBoxModel(c.getSizesForStyle(itemBox.getSelectedItem().toString()).toArray()));
         });
+        JComboBox colorBox = new JComboBox();
+        sizeBox.addActionListener(al -> {
+        	colorBox.setModel(new DefaultComboBoxModel(c.getColorsForSelectedItemAndSize(itemBox.getSelectedItem().toString(), sizeBox.getSelectedItem().toString()).toArray()));
+        });
+        JTextField salesColorText = new JTextField(8);
+        
+        
+        //colorBox.setModel(new DefaultComboBoxModel(c.getColorsForSelectedItemAndSize(itemBox.getSelectedItem().toString(), sizeBox.getSelectedItem().toString()).toArray()));
         JTextField costText = new JTextField(6);
         JTextField quantityText = new JTextField(6);
         JTextField totalText = new JTextField (6);
         JButton addSaleButton = new JButton("Add to Cart");
+        salesLog = new JTextArea(20,40);
+        salesLog.setMargin(new Insets(5,5,5,5));
+        salesLog.setEditable(false);
+        JScrollPane shoppingCart = new JScrollPane(salesLog);
+        addSaleButton.addActionListener(al -> {
+        	int customerId = ((Customer)customerBox.getSelectedItem()).id;
+        	String style = (String)itemBox.getSelectedItem();
+        	String size = (String)sizeBox.getSelectedItem();
+        	String color = (String)colorBox.getSelectedItem();
+        	int quantity = Integer.parseInt(quantityText.getText());
+        	
+        	System.out.println("Customer: " + customerId + " Style: " + style + " Size: " + size + " Color: " + color + " Quantity: " + quantity);
+        	Item i = c.searchItemMulti(style, size, color);
+        	
+        	c.addToCart(customerId, i, quantity);
+        	totalText.setText(Double.toString(c.getCartTotal(customerId)));
+        	salesLog.setText(c.showCart(customerId));	
+        });
         JButton completeSaleButton = new JButton ("Complete Sale");
-        JScrollPane shoppingCart = new JScrollPane();
+        completeSaleButton.addActionListener(al -> {
+        	c.completeSale(((Customer)customerBox.getSelectedItem()).id);
+        	salesLog.setText("Sale Completed!");
+        });
         //dimension of main component container
         Dimension size = new Dimension(800,325);
         Dimension size2 = new Dimension (500, 225);
@@ -412,11 +445,14 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
                 centerComponent.add(addSaleLabel, BorderLayout.PAGE_START);
                 centerComponent.setBackground(new Color(255,245,230));
                     centerSalesComponent.add(customerLabel);
-                    centerSalesComponent.add(customerText);
+                    centerSalesComponent.add(customerBox);
                     centerSalesComponent.add(itemLabel);
                     centerSalesComponent.add(itemBox);
                     centerSalesComponent.add(sizeLabel);
                     centerSalesComponent.add(sizeBox);
+                    centerSalesComponent.add(salesColorLabel);
+                    //centerSalesComponent.add(salesColorText);
+                    centerSalesComponent.add(colorBox);
                     centerSalesComponent.add(costLabel);
                     centerSalesComponent.add(costText);
                     centerSalesComponent.add(quantityLabel);
@@ -590,9 +626,21 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         i.sku = Long.parseLong(skuText.getText());
         c.addItem(i);
     }
-    void changeInvenQuanity (){
-        //need to write controller method to modify
-        inventoryLog.setText("change quantity");
+    void changeInvenQuantity (){
+//        Item i = new Item();
+//        i.style = styleText.getText();
+//        i.color = colorText.getText();
+//        i.size = sizeText.getText();
+//        i.quantity = Integer.parseInt(quantityText.getText());
+//        i.unitCost = Double.parseDouble(costText.getText());
+//        i.price = Double.parseDouble(priceText.getText());
+//        i.sku = Long.parseLong(skuText.getText());
+//        c.addItem(i);
+        
+    	long sku = Long.parseLong(skuInvenText.getText());
+        int quant = Integer.parseInt(quantityInvenText.getText());
+    	c.changeItemQuantity(sku, quant);
+        inventoryLog.setText("quantity changed");
     }
     void displayCustSearch (){
         String cSearchString = searchCustomerText.getText();

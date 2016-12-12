@@ -1,6 +1,8 @@
 package threadcount;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -8,6 +10,7 @@ public class Controller {
 
 	private Config conf = new Config();
 	private Connection c = null;
+	private Map<Integer, Cart> carts = new HashMap<Integer, Cart>();
 	
 	public Controller() {
 		// Constructor, sets up the DB connection
@@ -168,6 +171,87 @@ public class Controller {
 		
 	}
 	
+	protected void completeSale(int customerId) {
+		Cart cart = carts.get(customerId);
+		try {
+			PreparedStatement ps1 = c.prepareStatement("INSERT INTO sales (customer_id, item_id, quantity, sale_price) values (?, ?, ?, ?)");
+			for (Item i : cart.items) {
+				System.out.println(cart.cartMap.get(i));
+				ps1.setInt(1, cart.customerId);
+				ps1.setInt(2, i.id);
+				ps1.setInt(3, cart.cartMap.get(i));
+				ps1.setDouble(4, i.price);
+				ps1.executeUpdate();
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	protected String showCart(int customerId) {
+		StringBuilder sb = new StringBuilder();
+		for (Item i : carts.get(customerId).items) {
+			sb.append(i.toStringSearch());
+		}
+		return sb.toString();
+	}
+	
+	protected double getCartTotal(int customerId) {
+		double total = 0.0;
+		total = carts.get(customerId).total;
+		return total;
+	}
+	
+	protected boolean addToCart(int customerId, Item i, int quantity) {
+		Cart cart;
+		if (carts.containsKey(customerId)) {
+			cart = carts.get(customerId);
+		} else {
+			cart = new Cart(customerId);
+			carts.put(customerId, cart);
+		}
+		try {
+			Statement s1 = c.createStatement();
+			
+			s1.executeQuery("SELECT quantity FROM catalog WHERE id = " + i.id);
+			ResultSet r1 = s1.getResultSet();
+			while (r1.next()) {	
+				if (r1.getInt(1) > 0) {
+					Statement s2 = c.createStatement();
+					s2.executeUpdate("UPDATE catalog SET quantity = quantity - 1 WHERE id = " + i.id);
+					cart.addItem(i, quantity);
+					cart.total += i.price;
+					carts.put(customerId, cart);
+					return true;
+				}
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	protected Item searchItemMulti(String style, String size, String color) {
+		try {
+			Statement s = c.createStatement();
+			s.executeQuery("SELECT id, style, color, size, quantity, unit_cost, price, sku FROM catalog where style = \'" + style + "\' AND size = \'" + size + "\' AND color = \'" + color + "\'");
+			ResultSet rs = s.getResultSet();
+			while (rs.next()) {
+				Item item = new Item(rs.getInt("id"), rs.getString("style"), rs.getString("color"), rs.getString("size"), rs.getInt("quantity"), rs.getDouble("unit_cost"), rs.getDouble("price"), rs.getLong("sku"));
+				return item;
+			}
+			
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	protected void addSale() {
 		
 	}
@@ -198,7 +282,15 @@ public class Controller {
 		}
 	}
 	
-	
+	protected void changeItemQuantity(long skuToUpdate, int quant) {
+		List<Item> skuMatch = searchItemSku(skuToUpdate);
+                System.out.println("debug" + skuMatch);
+		if (skuMatch.size() == 1) {
+			//tried to create statement but not sure about syntax.
+		}
+        }
+
+        
 	protected List<Item> searchItemStyle(String searchTerm) {
 		// Return a list of Items by Style
 		List<Item> matches = new ArrayList<Item>();
@@ -308,6 +400,22 @@ public class Controller {
 			e.printStackTrace();
 		}
 		return styles;
+	}
+	
+	protected List<String> getColorsForSelectedItemAndSize(String style, String size) {
+		List<String> colors = new ArrayList();
+		try {
+			Statement s = c.createStatement();
+			s.executeQuery("SELECT DISTINCT color FROM catalog WHERE style = \'" + style + "\' AND size = \'" + size + "\'");
+			ResultSet rs = s.getResultSet();
+			while (rs.next()) {
+				colors.add(rs.getString(1));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return colors;
 	}
 	
 	protected List<String> getSizesForStyle(String style) {
