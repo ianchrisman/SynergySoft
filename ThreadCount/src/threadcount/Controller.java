@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.sql.*;
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
 
 public class Controller {
 
@@ -52,9 +53,8 @@ public class Controller {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-	
-	
+        }
+        
 	protected List<Customer> getAllCustomers() {
 		List<Customer> customers = new ArrayList<Customer>();
 		try {
@@ -132,7 +132,7 @@ public class Controller {
 				ps.setString(5, customer.phoneNumber);
 				
 				ps.executeUpdate();
-				
+				JOptionPane.showMessageDialog(null, "Customer added to Database");
 				System.out.println("okay added stuff");
 			}
 			rs.close();
@@ -160,8 +160,8 @@ public class Controller {
 				ps.setString(5, customer.phoneNumber);
 				
 				ps.executeUpdate();
-				
-				System.out.println("okay added stuff");
+				JOptionPane.showMessageDialog(null, "Customer added to Database");
+				//System.out.println("okay added stuff");
 			}
 			rs.close();
 		} catch (SQLException e) {
@@ -273,7 +273,9 @@ public class Controller {
 				ps.setLong(7, i.sku);
 				
 				ps.executeUpdate();
-				System.out.println("Added item to DB");
+				//System.out.println("Added item to DB");
+                                ThreadGUI.setAddedtoDBTrue();
+                                
 			}
 			rs.close();
 		} catch (SQLException e) {
@@ -360,12 +362,15 @@ public class Controller {
 			try {
 				Statement s = c.createStatement();
 				s.executeUpdate("DELETE FROM catalog WHERE id=" + id);
+                                JOptionPane.showMessageDialog(null, "Item Deleted");
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
-		}
+		} else {
+                        JOptionPane.showMessageDialog(null, "SKU Not Found");
+                }
 		
 	}
 	
@@ -378,12 +383,15 @@ public class Controller {
 			try {
 				Statement s = c.createStatement();
 				s.executeUpdate("DELETE FROM customer WHERE id=" + id);
+                                JOptionPane.showMessageDialog(null, "Customer Deleted");
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
-		}
+		} else {
+                        JOptionPane.showMessageDialog(null, "Customer ID not Found");
+                }
 		
 	}
 	
