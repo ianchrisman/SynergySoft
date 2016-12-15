@@ -283,7 +283,40 @@ public class Controller {
 			e.printStackTrace();
 		}
 	}
-	
+	protected void addItem(Item i, long skuToCheck) {
+            List<Item> matches = searchItemSku(skuToCheck);
+            if (matches.size() < 1){
+		try {
+			Statement s = c.createStatement();
+			ResultSet rs = s.executeQuery("SELECT * FROM catalog WHERE style = \'" + i.style + "\' AND color = \'" + i.color + "\' AND size = \'" + i.size + "\' AND quantity = \'" + i.quantity + "\' AND unit_cost = \'" + i.unitCost + "\' AND price = \'" + i.price + "\' AND sku = \'" + i.sku + "\'");
+			
+			if (!rs.next()) {
+				System.out.println("I can create the item");
+				PreparedStatement ps = c.prepareStatement("INSERT INTO catalog (style, color, size, quantity, unit_cost, price, sku) VALUES (?, ?, ?, ?, ?, ?, ?)");
+				ps.setString(1, i.style);
+				ps.setString(2, i.color);
+				ps.setString(3, i.size);
+				ps.setInt(4, i.quantity);
+				ps.setDouble(5, i.unitCost);
+				ps.setDouble(6, i.price);
+				ps.setLong(7, i.sku);
+				
+				ps.executeUpdate();
+				//System.out.println("Added item to DB");
+                                ThreadGUI.setAddedtoDBTrue();
+                                
+			}
+			rs.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+            } else{
+                JOptionPane.showMessageDialog(null, "SKU " + skuToCheck + " already exists. Not Added");
+            }
+	}
+        
+        
 	protected void changeItemQuantity(long skuToUpdate, int quant) {
 		List<Item> skuMatch = searchItemSku(skuToUpdate);
                 System.out.println("debug" + skuMatch);
@@ -369,9 +402,8 @@ public class Controller {
 			}
 			
 		} else {
-                        JOptionPane.showMessageDialog(null, "SKU Not Found");
+                        JOptionPane.showMessageDialog(null, "SKU " + skuToDelete +" Not Found");
                 }
-		
 	}
 	
 	protected void deleteCustomer(int id) {

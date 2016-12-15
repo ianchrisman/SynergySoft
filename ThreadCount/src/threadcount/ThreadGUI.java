@@ -641,6 +641,7 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
     void addClothing(){
         try{
             Item i = new Item();
+            long skuToCheck = Long.parseLong(skuText.getText());
             i.style = styleText.getText();
             i.color = colorText.getText();
             i.size = sizeText.getText();
@@ -648,7 +649,7 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
             i.unitCost = Double.parseDouble(costText.getText());
             i.price = Double.parseDouble(priceText.getText());
             i.sku = Long.parseLong(skuText.getText());
-            c.addItem(i);
+            c.addItem(i, skuToCheck);
             // clears the text fields after the adds
             styleText.setText("");
             colorText.setText("");
@@ -843,7 +844,8 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
                     i.unitCost = Double.parseDouble(catalogArray[5]);
                     i.price = Double.parseDouble(catalogArray[6]);
                     i.sku = Long.parseLong(catalogArray[0]);
-                    c.addItem(i);
+                    long skuToCheck = Long.parseLong(catalogArray[0]);
+                    c.addItem(i, skuToCheck);
                 } 
                 if (addedToDatabase == true){
                     JOptionPane.showMessageDialog(null, "Items Added to Database");
@@ -853,9 +855,13 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
                 JOptionPane.showMessageDialog(null, "File not found");
             } catch (ArrayIndexOutOfBoundsException e){
                 JOptionPane.showMessageDialog(null, "Incorrect Format. See .csv format below\n"
-                + "SKU,Style,Size,Color,Quantity,WholesalePrice,RetailPrice\n"
-                + "ex. \n18719874,Skirt,Medium,Black,4,21,49.99\n"
-                + "12315512,Skirt,Large,Black,2,21,49.99");
+                    + "SKU,Style,Size,Color,Quantity,WholesalePrice,RetailPrice\n"
+                    + "ex. \n18719874,Skirt,Medium,Black,4,21,49.99\n"
+                    + "12315512,Skirt,Large,Black,2,21,49.99");
+            }  catch (NumberFormatException e){
+                JOptionPane.showMessageDialog(null, "Your data is not formatted correctly.  "
+                        + "Check to see if you have entered a character where there is supposed "
+                        + "to be a number, or left one of the number fields blank.");
             }
         } else {
             catalogLog.append("Cancelled File Open ");
