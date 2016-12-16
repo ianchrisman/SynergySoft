@@ -220,9 +220,9 @@ public class Controller {
 			while (r1.next()) {	
 				if (r1.getInt(1) > 0) {
 					Statement s2 = c.createStatement();
-					s2.executeUpdate("UPDATE catalog SET quantity = quantity - 1 WHERE id = " + i.id);
+					s2.executeUpdate("UPDATE catalog SET quantity = quantity - " + quantity + " WHERE id = " + i.id);
 					cart.addItem(i, quantity);
-					cart.total += i.price;
+					cart.total += i.price * quantity;
 					carts.put(customerId, cart);
 					return true;
 				}
@@ -232,6 +232,23 @@ public class Controller {
 			e.printStackTrace();
 		}
 		return false;
+	}
+	
+	protected void cancelCart(int customerId) {
+		Cart cart = carts.get(customerId);
+		try {
+			PreparedStatement ps = c.prepareStatement("UPDATE catalog SET quantity = quantity + ? WHERE id = ?");
+			for (Item i : cart.items) {
+				int quantity = cart.cartMap.get(i);
+				ps.setInt(1, quantity);
+				ps.setInt(2, customerId);
+			}
+			cart.items.clear();
+			cart.cartMap.clear();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	protected Item searchItemMulti(String style, String size, String color) {
@@ -425,4 +442,16 @@ public class Controller {
 		}
 		return sizes;
 	}
+	
+	protected void changeItemQuantity(long sku, int quantity) {
+		try {
+			Statement s = c.createStatement();
+			s.executeUpdate("UPDATE catalog SET quantity = " + quantity + " WHERE sku = " + sku);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	//protected void getSalesForMonth()
 }
