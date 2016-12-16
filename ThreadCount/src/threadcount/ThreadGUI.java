@@ -117,7 +117,7 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         
         changeQuantityButton.addActionListener (new ActionListener () {
         @Override
-        public void actionPerformed (ActionEvent e) {changeInvenQuanity ();}});
+        public void actionPerformed (ActionEvent e) {changeInvenQuantity ();}});
         
     } // end ThreadGUI constructor
     
@@ -626,9 +626,21 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         i.sku = Long.parseLong(skuText.getText());
         c.addItem(i);
     }
-    void changeInvenQuanity (){
-        //need to write controller method to modify
-        inventoryLog.setText("change quantity");
+    void changeInvenQuantity (){
+//        Item i = new Item();
+//        i.style = styleText.getText();
+//        i.color = colorText.getText();
+//        i.size = sizeText.getText();
+//        i.quantity = Integer.parseInt(quantityText.getText());
+//        i.unitCost = Double.parseDouble(costText.getText());
+//        i.price = Double.parseDouble(priceText.getText());
+//        i.sku = Long.parseLong(skuText.getText());
+//        c.addItem(i);
+        
+    	long sku = Long.parseLong(skuInvenText.getText());
+        int quant = Integer.parseInt(quantityInvenText.getText());
+    	c.changeItemQuantity(sku, quant);
+        inventoryLog.setText("quantity changed");
     }
     void displayCustSearch (){
         String cSearchString = searchCustomerText.getText();
