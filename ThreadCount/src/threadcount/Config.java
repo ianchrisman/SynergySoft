@@ -7,11 +7,12 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 public class Config extends JFrame {
 	private static final long serialVersionUID = 1L;
-	
+
 	/*
 	protected String dbHost = "192.168.1.10";
 	protected int dbPort = 3306;
@@ -39,7 +40,7 @@ public class Config extends JFrame {
 	protected JTextField txtHost = new JTextField(20);
 	protected JTextField txtPort = new JTextField(20);
 	protected JTextField txtUser = new JTextField(20);
-	protected JTextField txtPass = new JTextField(20);
+	protected JPasswordField txtPass = new JPasswordField(20);
 	
 	
 	protected JButton jbOK = new JButton("OK");
@@ -54,6 +55,10 @@ public class Config extends JFrame {
 		txtPort.setText(String.valueOf(dbPort));
 		txtUser.setText(dbUser);
 		txtPass.setText(dbPass);
+                //txtPass.setActionCommand(OK);
+                //txtPass.addActionListener(this);
+
+           
 		jp1.add(lblHost);
 		jp1.add(lblPort);
 		jp1.add(lblUser);

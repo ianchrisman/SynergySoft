@@ -28,6 +28,7 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
     boolean isPressedCustomer, isPressedInventory, isPressedSales, isPressedMoSales, 
             isPressedBest = false;
     static boolean addedToDatabase = false;
+    int customerId;
     
     public ThreadGUI(Controller c){ //begin constructor
         super(new BorderLayout());
@@ -131,7 +132,7 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
     
     public static void createGUI(){ //begin CreateGui method, called from Main Method
         //Window Set up
-        JFrame frame = new JFrame("ThreadCounts");    
+        JFrame frame = new JFrame("ThreadCount");    
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //Content Pane
         ThreadGUI threadPane = new ThreadGUI(c);
@@ -361,7 +362,7 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         JLabel customerLabel = new JLabel("Customer:");
         JLabel itemLabel = new JLabel("Item:");
         JLabel sizeLabel = new JLabel("Size:");
-        JLabel costLabel = new JLabel("Cost:");
+        //JLabel costLabel = new JLabel("Cost:");
         JLabel quantityLabel = new JLabel("Quantity:");
         JLabel addSaleLabel = new JLabel("  Add Sale Item  ");
         JLabel addCartLabel = new JLabel("  Cart  ");
@@ -386,11 +387,11 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         sizeBox.addActionListener(al -> {
         	colorBox.setModel(new DefaultComboBoxModel(c.getColorsForSelectedItemAndSize(itemBox.getSelectedItem().toString(), sizeBox.getSelectedItem().toString()).toArray()));
         });
-        JTextField salesColorText = new JTextField(8);
+        //JTextField salesColorText = new JTextField(8);
         
         
         //colorBox.setModel(new DefaultComboBoxModel(c.getColorsForSelectedItemAndSize(itemBox.getSelectedItem().toString(), sizeBox.getSelectedItem().toString()).toArray()));
-        JTextField costText = new JTextField(6);
+        //JTextField costText = new JTextField(6);
         JTextField quantityText = new JTextField(6);
         JTextField totalText = new JTextField (6);
         JButton addSaleButton = new JButton("Add to Cart");
@@ -400,7 +401,7 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         salesLog.setEditable(false);
         JScrollPane shoppingCart = new JScrollPane(salesLog);
         addSaleButton.addActionListener(al -> {
-        	int customerId = ((Customer)customerBox.getSelectedItem()).id;
+        	customerId = ((Customer)customerBox.getSelectedItem()).id;
         	String style = (String)itemBox.getSelectedItem();
         	String size = (String)sizeBox.getSelectedItem();
         	String color = (String)colorBox.getSelectedItem();
@@ -459,8 +460,8 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
                     centerSalesComponent.add(salesColorLabel);
                     //centerSalesComponent.add(salesColorText);
                     centerSalesComponent.add(colorBox);
-                    centerSalesComponent.add(costLabel);
-                    centerSalesComponent.add(costText);
+                    //centerSalesComponent.add(costLabel);
+                    //centerSalesComponent.add(costText);
                     centerSalesComponent.add(quantityLabel);
                     centerSalesComponent.add(quantityText);
                     centerSalesComponent.add(blankLabel);
@@ -601,9 +602,6 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         return pane;
     } // End Report Method
     
-    protected void addToCart() {
-    	// Still need to do this
-    }
     public static void setAddedtoDBTrue(){// boolean used to display added to database alerts
         addedToDatabase = true;
     }
@@ -671,12 +669,13 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
     void cancelSale() {
         //cancel button code.
         salesLog.setText("Transaction Cancelled");
+        c.cancelCart(customerId);
     }
     void changeInvenQuantity (){        
     	long sku = Long.parseLong(skuInvenText.getText());
         int quant = Integer.parseInt(quantityInvenText.getText());
     	c.changeItemQuantity(sku, quant);
-        inventoryLog.setText("quantity changed");
+        //inventoryLog.append("quantity changed");
     }
     void displayCustSearch (){
         String cSearchString = searchCustomerText.getText();

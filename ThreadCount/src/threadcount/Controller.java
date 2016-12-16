@@ -169,9 +169,9 @@ public class Controller {
 			e.printStackTrace();
 		}
 		
-	}
-	
-	protected void completeSale(int customerId) {
+	}	
+        
+        protected void completeSale(int customerId) {
 		Cart cart = carts.get(customerId);
 		try {
 			PreparedStatement ps1 = c.prepareStatement("INSERT INTO sales (customer_id, item_id, quantity, sale_price) values (?, ?, ?, ?)");
@@ -220,9 +220,9 @@ public class Controller {
 			while (r1.next()) {	
 				if (r1.getInt(1) > 0) {
 					Statement s2 = c.createStatement();
-					s2.executeUpdate("UPDATE catalog SET quantity = quantity - 1 WHERE id = " + i.id);
+					s2.executeUpdate("UPDATE catalog SET quantity = quantity - " + quantity + " WHERE id = " + i.id);
 					cart.addItem(i, quantity);
-					cart.total += i.price;
+					cart.total += i.price * quantity;
 					carts.put(customerId, cart);
 					return true;
 				}
@@ -233,6 +233,24 @@ public class Controller {
 		}
 		return false;
 	}
+        
+        
+	protected void cancelCart(int customerId) {
+		Cart cart = carts.get(customerId);
+		try {
+			PreparedStatement ps = c.prepareStatement("UPDATE catalog SET quantity = quantity + ? WHERE id = ?");
+			for (Item i : cart.items) {
+				int quantity = cart.cartMap.get(i);
+				ps.setInt(1, quantity);
+				ps.setInt(2, customerId);
+			}
+			cart.items.clear();
+			cart.cartMap.clear();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}     
 	
 	protected Item searchItemMulti(String style, String size, String color) {
 		try {
@@ -252,9 +270,6 @@ public class Controller {
 		return null;
 	}
 	
-	protected void addSale() {
-		
-	}
 	
 	protected void addItem(Item i) {
 		try {
@@ -315,15 +330,6 @@ public class Controller {
                 JOptionPane.showMessageDialog(null, "SKU " + skuToCheck + " already exists. Not Added");
             }
 	}
-        
-        
-	protected void changeItemQuantity(long skuToUpdate, int quant) {
-		List<Item> skuMatch = searchItemSku(skuToUpdate);
-                System.out.println("debug" + skuMatch);
-		if (skuMatch.size() == 1) {
-			//tried to create statement but not sure about syntax.
-		}
-        }
 
         
 	protected List<Item> searchItemStyle(String searchTerm) {
@@ -472,5 +478,22 @@ public class Controller {
 			e.printStackTrace();
 		}
 		return sizes;
+	}
+        
+        
+	protected void changeItemQuantity(long sku, int quantity) {
+                List<Item> matches = searchItemSku(sku);
+                if (matches.size() == 1) {
+                        try {
+                                Statement s = c.createStatement();
+                                s.executeUpdate("UPDATE catalog SET quantity = " + quantity + " WHERE sku = " + sku);
+                                JOptionPane.showMessageDialog(null, "Quantity Updated");
+                        } catch (SQLException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                        }
+                } else {
+                        JOptionPane.showMessageDialog(null, "SKU " + sku +" Not Found");
+                }
 	}
 }
