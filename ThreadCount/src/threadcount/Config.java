@@ -7,6 +7,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 public class Config extends JFrame {
@@ -24,6 +25,7 @@ public class Config extends JFrame {
 	protected int dbPort = 3306;
 	protected String dbName = "threadcounts";
 	protected String dbUser = "threadDELETEME";
+	//protected String dbPass = "Thp3@dC0untz";
 	protected String dbPass = "Thp3@dC0untz";
 	
 	protected boolean ok = false;
@@ -40,6 +42,8 @@ public class Config extends JFrame {
 	protected JTextField txtPort = new JTextField(20);
 	protected JTextField txtUser = new JTextField(20);
 	protected JTextField txtPass = new JTextField(20);
+	protected JPasswordField passField = new JPasswordField("Thp3@dC0untz");
+	
 	
 	
 	protected JButton jbOK = new JButton("OK");
@@ -61,7 +65,9 @@ public class Config extends JFrame {
 		jp2.add(txtHost);
 		jp2.add(txtPort);
 		jp2.add(txtUser);
-		jp2.add(txtPass);
+		//jp2.add(txtPass);
+		jp2.add(passField);
+		passField.setEchoChar('*');
 		
 		jp.add(jp1, BorderLayout.WEST);
 		jp.add(jp2, BorderLayout.EAST);
@@ -81,7 +87,8 @@ public class Config extends JFrame {
 		dbHost = txtHost.getText();
 		dbPort = Integer.parseInt(txtPort.getText());
 		dbUser = txtUser.getText();
-		dbPass = txtPass.getText();
+		//dbPass = txtPass.getText();
+		dbPass = String.valueOf(passField.getPassword());
 		ok = true;
 		this.setVisible(false);
 	}

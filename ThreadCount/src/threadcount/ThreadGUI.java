@@ -18,15 +18,19 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
             catalogSearchButton, addCustomerButton, addClothingButton,
             loadInventoryButton, SalesMonthButton, SalesAllButton, bestsellersButton, 
             exportButton, displayAllInvenButton,searchInvenButton, changeQuantityButton,
-            deleteCustomerButton, deleteClothingButton;
+            deleteCustomerButton, deleteClothingButton, cancelButton;
     JTextArea customerLog, catalogLog, salesLog, reportLog, inventoryLog;
-    JTextField searchCustomerText, searchCatalogText, lastNameText, firstNameText, 
-            addressText, emailText, phoneText, styleText, colorText, sizeText, 
+    JTextField searchCustomerText, searchCatalogText, styleText, colorText, sizeText, 
             skuText, costText, priceText, quantityText,searchInvenText,quantityInvenText,
-            skuInvenText,customerIDText, catalogIDText;
+            skuInvenText,customerIDText, catalogIDText, lastNameText, firstNameText, 
+            addressText, emailText, phoneText;
     JFileChooser chooser;
     boolean isPressedCustomer, isPressedInventory, isPressedSales, isPressedMoSales, 
             isPressedBest = false;
+    static boolean addedToDatabase = false;
+    JTextField totalText = new JTextField (6);
+    JComboBox customerBox = new JComboBox();
+    int customerId;
     
     public ThreadGUI(Controller c){ //begin constructor
         super(new BorderLayout());
@@ -75,6 +79,10 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         @Override
         public void actionPerformed(ActionEvent e){displayCatSearch ();}});
         
+        cancelButton.addActionListener(new ActionListener(){ 
+        @Override
+        public void actionPerformed(ActionEvent e){cancelSale ();}});
+        
         deleteCustomerButton.addActionListener(new ActionListener(){ 
         @Override
         public void actionPerformed(ActionEvent e){deleteCustomer ();}});
@@ -90,6 +98,10 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         inventoryButton.addActionListener(new ActionListener(){ 
         @Override
         public void actionPerformed(ActionEvent e){displayAllInvenReport ();}});
+        
+        SalesAllButton.addActionListener(al -> {
+        	displayAllSales();
+        });
         
         displayAllInvenButton.addActionListener(new ActionListener(){ 
         @Override
@@ -107,7 +119,7 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         @Override
         public void actionPerformed(ActionEvent e){addCustomer();}}); 
         
-        addClothingButton.addActionListener(new ActionListener(){ 
+        addClothingButton.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e){addClothing();}});
             
@@ -126,7 +138,7 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
     
     public static void createGUI(){ //begin CreateGui method, called from Main Method
         //Window Set up
-        JFrame frame = new JFrame("ThreadCounts");    
+        JFrame frame = new JFrame("ThreadCount");    
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //Content Pane
         ThreadGUI threadPane = new ThreadGUI(c);
@@ -156,7 +168,7 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         JLabel emailLabel = new JLabel("Email:");
         JLabel phoneLabel = new JLabel("Phone:");
         JLabel addCustomerLabel = new JLabel("       Add New Customer");
-        JLabel searchCustomerLabel = new JLabel("       Search ");
+        JLabel searchCustomerLabel = new JLabel("       Search by Name");
         JLabel customerIDLabel = new JLabel(" Enter Customer ID to Delete");
         lastNameText = new JTextField(6);
         firstNameText = new JTextField(6);
@@ -254,7 +266,7 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         JLabel priceLabel = new JLabel("Retail Price:");
         JLabel quantityLabel = new JLabel("Quantity:");
         JLabel addClothingLabel = new JLabel("       Adding Catalog Item");
-        JLabel searchClothingLabel = new JLabel("       Item Search ");
+        JLabel searchClothingLabel = new JLabel("       Item Search by Style or Color ");
         JLabel catalogIDLabel = new JLabel(" Enter SKU to Delete");
         styleText = new JTextField(6);
         colorText = new JTextField(6);
@@ -356,7 +368,7 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         JLabel customerLabel = new JLabel("Customer:");
         JLabel itemLabel = new JLabel("Item:");
         JLabel sizeLabel = new JLabel("Size:");
-        JLabel costLabel = new JLabel("Cost:");
+        //JLabel costLabel = new JLabel("Cost:");
         JLabel quantityLabel = new JLabel("Quantity:");
         JLabel addSaleLabel = new JLabel("  Add Sale Item  ");
         JLabel addCartLabel = new JLabel("  Cart  ");
@@ -366,10 +378,10 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         JLabel quantityLabel1 = new JLabel("Quantity:");
         JLabel totalLabel= new JLabel(" Total:  ");
         JLabel salesColorLabel = new JLabel("Color:");
-        //JTextField customerText = new JTextField(6);
-        JComboBox customerBox = new JComboBox();
+        //JComboBox customerBox = new JComboBox(); //Moved this so adding a customer will refresh this -JJ
         
         customerBox.setModel(new DefaultComboBoxModel(c.getAllCustomers().toArray()));
+        
         JComboBox itemBox = new JComboBox();
         
         JComboBox sizeBox = new JComboBox();
@@ -381,20 +393,21 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         sizeBox.addActionListener(al -> {
         	colorBox.setModel(new DefaultComboBoxModel(c.getColorsForSelectedItemAndSize(itemBox.getSelectedItem().toString(), sizeBox.getSelectedItem().toString()).toArray()));
         });
-        JTextField salesColorText = new JTextField(8);
+        //JTextField salesColorText = new JTextField(8);
         
         
         //colorBox.setModel(new DefaultComboBoxModel(c.getColorsForSelectedItemAndSize(itemBox.getSelectedItem().toString(), sizeBox.getSelectedItem().toString()).toArray()));
-        JTextField costText = new JTextField(6);
+        //JTextField costText = new JTextField(6);
         JTextField quantityText = new JTextField(6);
-        JTextField totalText = new JTextField (6);
+        //JTextField totalText = new JTextField (6); //Moved so cancel method will reset this - JJ
         JButton addSaleButton = new JButton("Add to Cart");
+        cancelButton = new JButton("Cancel Sale");
         salesLog = new JTextArea(20,40);
         salesLog.setMargin(new Insets(5,5,5,5));
         salesLog.setEditable(false);
         JScrollPane shoppingCart = new JScrollPane(salesLog);
         addSaleButton.addActionListener(al -> {
-        	int customerId = ((Customer)customerBox.getSelectedItem()).id;
+        	customerId = ((Customer)customerBox.getSelectedItem()).id;
         	String style = (String)itemBox.getSelectedItem();
         	String size = (String)sizeBox.getSelectedItem();
         	String color = (String)colorBox.getSelectedItem();
@@ -453,8 +466,8 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
                     centerSalesComponent.add(salesColorLabel);
                     //centerSalesComponent.add(salesColorText);
                     centerSalesComponent.add(colorBox);
-                    centerSalesComponent.add(costLabel);
-                    centerSalesComponent.add(costText);
+                    //centerSalesComponent.add(costLabel);
+                    //centerSalesComponent.add(costText);
                     centerSalesComponent.add(quantityLabel);
                     centerSalesComponent.add(quantityText);
                     centerSalesComponent.add(blankLabel);
@@ -475,6 +488,7 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
                         rightGridComponent.add(costLabel1);
                         rightGridComponent.setBackground(new Color(255,245,230));
                     rightCartComponent.add(rightFlowComponent, BorderLayout.PAGE_END);
+                        rightFlowComponent.add(cancelButton);
                         rightFlowComponent.add(totalLabel);
                         rightFlowComponent.add(totalText);
                         rightFlowComponent.add(completeSaleButton);
@@ -592,63 +606,92 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
                 bottomComponent.add(exportButton);
                 bottomComponent.setBackground(new Color(255,245,230));
         return pane;
-        
-        
     } // End Report Method
     
-    protected void addToCart() {
-    	// Still need to do this
+    public static void setAddedtoDBTrue(){// boolean used to display added to database alerts
+        addedToDatabase = true;
     }
-    
+    public static void setAddedtoDBFalse(){
+        addedToDatabase = false;
+    }
     void addCustomer (){
-        Customer cust = new Customer();
-        cust.lastName = lastNameText.getText();
-        cust.firstName = firstNameText.getText();
-        cust.address = addressText.getText();
-        cust.email = emailText.getText();
-        cust.phoneNumber = phoneText.getText();
-        c.addCustomer(cust);
-        // clears the text fields after adds
-        lastNameText.setText("");
-        firstNameText.setText("");
-        addressText.setText("");
-        emailText.setText("");
-        phoneText.setText("");
+        if (lastNameText.getText().isEmpty()){
+            JOptionPane.showMessageDialog(null, "Please Enter a Last Name");
+        } else if (firstNameText.getText().isEmpty()){
+            JOptionPane.showMessageDialog(null, "Please Enter a First Name");
+        } else if (addressText.getText().isEmpty()){
+            JOptionPane.showMessageDialog(null, "Please Enter a Complete Address");
+        } else if (emailText.getText().isEmpty()){
+            JOptionPane.showMessageDialog(null, "Please Enter an Email Address");
+        } else if (phoneText.getText().isEmpty()){
+            JOptionPane.showMessageDialog(null, "Please Enter a phone number");
+        } else {
+            Customer cust = new Customer();
+            cust.lastName = lastNameText.getText();
+            cust.firstName = firstNameText.getText();
+            cust.address = addressText.getText();
+            cust.email = emailText.getText();
+            cust.phoneNumber = phoneText.getText();
+            c.addCustomer(cust);
+            customerBox.setModel(new DefaultComboBoxModel(c.getAllCustomers().toArray()));
+            
+            // clears the text fields after adds
+            lastNameText.setText("");
+            firstNameText.setText("");
+            addressText.setText("");
+            emailText.setText("");
+            phoneText.setText("");
+        }
     }
     void addClothing(){
-        Item i = new Item();
-        i.style = styleText.getText();
-        i.color = colorText.getText();
-        i.size = sizeText.getText();
-        i.quantity = Integer.parseInt(quantityText.getText());
-        i.unitCost = Double.parseDouble(costText.getText());
-        i.price = Double.parseDouble(priceText.getText());
-        i.sku = Long.parseLong(skuText.getText());
-        c.addItem(i);
+        try{
+            Item i = new Item();
+            long skuToCheck = Long.parseLong(skuText.getText());
+            i.style = styleText.getText();
+            i.color = colorText.getText();
+            i.size = sizeText.getText();
+            i.quantity = Integer.parseInt(quantityText.getText());
+            i.unitCost = Double.parseDouble(costText.getText());
+            i.price = Double.parseDouble(priceText.getText());
+            i.sku = Long.parseLong(skuText.getText());
+            c.addItem(i, skuToCheck);
+            // clears the text fields after the adds
+            styleText.setText("");
+            colorText.setText("");
+            sizeText.setText("");
+            quantityText.setText("");
+            costText.setText("");
+            priceText.setText("");
+            skuText.setText("");
+            if (addedToDatabase == true){
+                JOptionPane.showMessageDialog(null, "Added to Database");
+                addedToDatabase = false;
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Please enter in the correct format"
+                    + "\nSKU ex. 382938442\nRetail Price ex. 47.99\nWholesale Price ex. 16.00"
+                    + "\nQuantity ex. 8");
+        }
     }
-    void changeInvenQuantity (){
-//        Item i = new Item();
-//        i.style = styleText.getText();
-//        i.color = colorText.getText();
-//        i.size = sizeText.getText();
-//        i.quantity = Integer.parseInt(quantityText.getText());
-//        i.unitCost = Double.parseDouble(costText.getText());
-//        i.price = Double.parseDouble(priceText.getText());
-//        i.sku = Long.parseLong(skuText.getText());
-//        c.addItem(i);
-        
+    void cancelSale() {
+        //cancel button code.
+        salesLog.setText("Transaction Cancelled");
+        c.cancelCart(customerId);
+        totalText.setText("");
+    }
+    void changeInvenQuantity (){        
     	long sku = Long.parseLong(skuInvenText.getText());
         int quant = Integer.parseInt(quantityInvenText.getText());
     	c.changeItemQuantity(sku, quant);
-        inventoryLog.setText("quantity changed");
+        //inventoryLog.append("quantity changed");
     }
     void displayCustSearch (){
         String cSearchString = searchCustomerText.getText();
     	List<Customer> foundCustomers = c.searchCustomerNameAny(cSearchString);
         System.out.println(cSearchString);
-    	customerLog.setText("Customer search rersults for: " + cSearchString + " \n");
+    	customerLog.setText("Customer search results for: " + cSearchString + " \n");
     	for (Customer cust : foundCustomers) {
-    		System.out.println(cust.toStringSearch());
+    		//System.out.println(cust.toStringSearch());
                 customerLog.append(cust.toStringSearch());
         }
     } 
@@ -656,9 +699,9 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         String iSearchString = searchCatalogText.getText();
     	List<Item> foundItems = c.searchItemStyle(iSearchString);
         System.out.println(iSearchString);
-    	catalogLog.setText("Catalog search rersults for: " + iSearchString + " \n");
+    	catalogLog.setText("Catalog search results for: " + iSearchString + " \n");
     	for (Item item : foundItems) {
-    		System.out.println(item.toStringSearch());
+    		//System.out.println(item.toStringSearch());
                 catalogLog.append(item.toStringSearch());
         }
     } 
@@ -666,24 +709,42 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         String iSearchString = searchInvenText.getText();
     	List<Item> foundItems = c.searchItemStyle(iSearchString);
         System.out.println(iSearchString);
-    	inventoryLog.setText("Catalog search rersults for: " + iSearchString + " \n");
+    	inventoryLog.setText("Catalog search results for: " + iSearchString + " \n");
     	for (Item item : foundItems) {
-    		System.out.println(item.toString());
-                inventoryLog.append(item.toString());
+    		//System.out.println(item.toString());
+                inventoryLog.append(item.toStringSearch());
         }
     }
     void deleteCustomer (){
-        //customerIDText
-    	int id = Integer.parseInt(customerIDText.getText());
-    	c.deleteCustomer(id);
+        try{
+                int id = Integer.parseInt(customerIDText.getText());
+                c.deleteCustomer(id);
+                customerIDText.setText("");
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Please enter a number for the ID\n"
+                    + "Ex. 31");
+        }
     }
     void deleteCatalogItem (){
-        //catalogIDText
-    	long sku = Long.parseLong(catalogIDText.getText());
-    	c.deleteItem(sku);
+        try{
+                long sku = Long.parseLong(catalogIDText.getText());
+                c.deleteItem(sku);
+                catalogIDText.setText("");// clear field after delete
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Please enter a number for the SKU\n"
+                    + "Ex. 3818494081");
+        }
     }
+    
+    void displayAllSales() {
+    	String salesData = c.displayAllSales();
+    	reportLog.setText(salesData);
+    }
+    
     void exportReport (){
         if (isPressedInventory == true){
+            JOptionPane.showMessageDialog(null, "Select a location to save the inventory"
+                    + "report as a .csv file");
             chooser = new JFileChooser();
             int returnVal = chooser.showSaveDialog(this);
             if (returnVal == JFileChooser.APPROVE_OPTION){
@@ -696,6 +757,7 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
                         fw.write(item.toStringReport() + "\n");
                 }
                 fw.close();
+                
             }   catch (IOException e){
                 e.printStackTrace();
             }
@@ -704,6 +766,8 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
                 reportLog.append("\n\nCancelled File Open ");
             }
         } else if (isPressedCustomer == true){
+            JOptionPane.showMessageDialog(null, "Select a location to save the Customer"
+                    + "report as a .csv file.");
             chooser = new JFileChooser();
             int returnVal = chooser.showSaveDialog(this);
             if (returnVal == JFileChooser.APPROVE_OPTION){
@@ -725,12 +789,15 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
             }
         } else if (isPressedSales == true){
             System.out.println("Export All Sales");
+            isPressedSales = false;
         } else if (isPressedMoSales == true){
             System.out.println("Export Monthly Sales");
+            isPressedMoSales = false;
         } else if (isPressedBest == true){
             System.out.println("Export BestSellers");
+            isPressedBest = false;
         } else{
-            reportLog.setText("\n Please select a report to export first");
+            JOptionPane.showMessageDialog(null, "Please select a report to export first");
         }  
     }
     void displayAllInvenReport (){
@@ -766,13 +833,16 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
     }
     
     void loadCatalog(){  
-        chooser = new JFileChooser(".");
+        JOptionPane.showMessageDialog(null, "Data must be inputed in standard .csv format\n"
+                + "SKU,Style,Size,Color,Quantity,WholesalePrice,RetailPrice\n"
+                + "ex. \n18719874,Skirt,Medium,Black,4,21,49.99\n"
+                + "12315512,Skirt,Large,Black,2,21,49.99");
+        chooser = new JFileChooser();
         //chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         int returnVal = chooser.showOpenDialog(this);
         String line = "^M";//indicates end of csv line
         String csvSplitBy = ",";
         BufferedReader br = null;
-
         if (returnVal == JFileChooser.APPROVE_OPTION){
             try{
                 File file = chooser.getSelectedFile();
@@ -787,13 +857,27 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
                     i.unitCost = Double.parseDouble(catalogArray[5]);
                     i.price = Double.parseDouble(catalogArray[6]);
                     i.sku = Long.parseLong(catalogArray[0]);
-                    c.addItem(i);
+                    long skuToCheck = Long.parseLong(catalogArray[0]);
+                    c.addItem(i, skuToCheck);
+                } 
+                if (addedToDatabase == true){
+                    JOptionPane.showMessageDialog(null, "Items Added to Database");
+                    addedToDatabase = false;
                 }
             }  catch (IOException e){
-                System.out.println("Exception Thrown ioexception");
+                JOptionPane.showMessageDialog(null, "File not found");
+            } catch (ArrayIndexOutOfBoundsException e){
+                JOptionPane.showMessageDialog(null, "Incorrect Format. See .csv format below\n"
+                    + "SKU,Style,Size,Color,Quantity,WholesalePrice,RetailPrice\n"
+                    + "ex. \n18719874,Skirt,Medium,Black,4,21,49.99\n"
+                    + "12315512,Skirt,Large,Black,2,21,49.99");
+            }  catch (NumberFormatException e){
+                JOptionPane.showMessageDialog(null, "Your data is not formatted correctly.  "
+                        + "Check to see if you have entered a character where there is supposed "
+                        + "to be a number, or left one of the number fields blank.");
             }
         } else {
-            System.out.println("Cancelled File Open ");
+            catalogLog.append("Cancelled File Open ");
         }
     }
 }//end class ThreadGUI

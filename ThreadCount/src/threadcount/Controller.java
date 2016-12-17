@@ -6,6 +6,8 @@ import java.util.Map;
 import java.sql.*;
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
 public class Controller {
 
 	private Config conf = new Config();
@@ -52,9 +54,8 @@ public class Controller {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-	
-	
+        }
+        
 	protected List<Customer> getAllCustomers() {
 		List<Customer> customers = new ArrayList<Customer>();
 		try {
@@ -132,7 +133,7 @@ public class Controller {
 				ps.setString(5, customer.phoneNumber);
 				
 				ps.executeUpdate();
-				
+				JOptionPane.showMessageDialog(null, "Customer added to Database");
 				System.out.println("okay added stuff");
 			}
 			rs.close();
@@ -160,8 +161,8 @@ public class Controller {
 				ps.setString(5, customer.phoneNumber);
 				
 				ps.executeUpdate();
-				
-				System.out.println("okay added stuff");
+				JOptionPane.showMessageDialog(null, "Customer added to Database");
+				//System.out.println("okay added stuff");
 			}
 			rs.close();
 		} catch (SQLException e) {
@@ -169,9 +170,9 @@ public class Controller {
 			e.printStackTrace();
 		}
 		
-	}
-	
-	protected void completeSale(int customerId) {
+	}	
+        
+        protected void completeSale(int customerId) {
 		Cart cart = carts.get(customerId);
 		try {
 			PreparedStatement ps1 = c.prepareStatement("INSERT INTO sales (customer_id, item_id, quantity, sale_price) values (?, ?, ?, ?)");
@@ -233,7 +234,8 @@ public class Controller {
 		}
 		return false;
 	}
-	
+        
+        
 	protected void cancelCart(int customerId) {
 		Cart cart = carts.get(customerId);
 		try {
@@ -241,7 +243,8 @@ public class Controller {
 			for (Item i : cart.items) {
 				int quantity = cart.cartMap.get(i);
 				ps.setInt(1, quantity);
-				ps.setInt(2, customerId);
+				ps.setInt(2, i.id);
+				ps.executeUpdate();
 			}
 			cart.items.clear();
 			cart.cartMap.clear();
@@ -249,7 +252,7 @@ public class Controller {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
+	}     
 	
 	protected Item searchItemMulti(String style, String size, String color) {
 		try {
@@ -269,9 +272,6 @@ public class Controller {
 		return null;
 	}
 	
-	protected void addSale() {
-		
-	}
 	
 	protected void addItem(Item i) {
 		try {
@@ -290,7 +290,9 @@ public class Controller {
 				ps.setLong(7, i.sku);
 				
 				ps.executeUpdate();
-				System.out.println("Added item to DB");
+				//System.out.println("Added item to DB");
+                                ThreadGUI.setAddedtoDBTrue();
+                                
 			}
 			rs.close();
 		} catch (SQLException e) {
@@ -298,8 +300,40 @@ public class Controller {
 			e.printStackTrace();
 		}
 	}
-	
-	
+	protected void addItem(Item i, long skuToCheck) {
+            List<Item> matches = searchItemSku(skuToCheck);
+            if (matches.size() < 1){
+		try {
+			Statement s = c.createStatement();
+			ResultSet rs = s.executeQuery("SELECT * FROM catalog WHERE style = \'" + i.style + "\' AND color = \'" + i.color + "\' AND size = \'" + i.size + "\' AND quantity = \'" + i.quantity + "\' AND unit_cost = \'" + i.unitCost + "\' AND price = \'" + i.price + "\' AND sku = \'" + i.sku + "\'");
+			
+			if (!rs.next()) {
+				System.out.println("I can create the item");
+				PreparedStatement ps = c.prepareStatement("INSERT INTO catalog (style, color, size, quantity, unit_cost, price, sku) VALUES (?, ?, ?, ?, ?, ?, ?)");
+				ps.setString(1, i.style);
+				ps.setString(2, i.color);
+				ps.setString(3, i.size);
+				ps.setInt(4, i.quantity);
+				ps.setDouble(5, i.unitCost);
+				ps.setDouble(6, i.price);
+				ps.setLong(7, i.sku);
+				
+				ps.executeUpdate();
+				//System.out.println("Added item to DB");
+                                ThreadGUI.setAddedtoDBTrue();
+                                
+			}
+			rs.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+            } else{
+                JOptionPane.showMessageDialog(null, "SKU " + skuToCheck + " already exists. Not Added");
+            }
+	}
+
+        
 	protected List<Item> searchItemStyle(String searchTerm) {
 		// Return a list of Items by Style
 		List<Item> matches = new ArrayList<Item>();
@@ -369,13 +403,15 @@ public class Controller {
 			try {
 				Statement s = c.createStatement();
 				s.executeUpdate("DELETE FROM catalog WHERE id=" + id);
+                                JOptionPane.showMessageDialog(null, "Item Deleted");
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
-		}
-		
+		} else {
+                        JOptionPane.showMessageDialog(null, "SKU " + skuToDelete +" Not Found");
+                }
 	}
 	
 	protected void deleteCustomer(int id) {
@@ -387,12 +423,15 @@ public class Controller {
 			try {
 				Statement s = c.createStatement();
 				s.executeUpdate("DELETE FROM customer WHERE id=" + id);
+                                JOptionPane.showMessageDialog(null, "Customer Deleted");
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
-		}
+		} else {
+                        JOptionPane.showMessageDialog(null, "Customer ID not Found");
+                }
 		
 	}
 	
@@ -442,16 +481,87 @@ public class Controller {
 		}
 		return sizes;
 	}
-	
+        
+        
 	protected void changeItemQuantity(long sku, int quantity) {
+                List<Item> matches = searchItemSku(sku);
+                if (matches.size() == 1) {
+                        try {
+                                Statement s = c.createStatement();
+                                s.executeUpdate("UPDATE catalog SET quantity = " + quantity + " WHERE sku = " + sku);
+                                JOptionPane.showMessageDialog(null, "Quantity Updated");
+                        } catch (SQLException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                        }
+                } else {
+                        JOptionPane.showMessageDialog(null, "SKU " + sku +" Not Found");
+                }
+	}
+	
+	protected String displayAllSales() {
+		StringBuffer sb = new StringBuffer();
 		try {
 			Statement s = c.createStatement();
-			s.executeUpdate("UPDATE catalog SET quantity = " + quantity + " WHERE sku = " + sku);
+			PreparedStatement ps = c.prepareStatement("SELECT c.last_name, c.first_name, i.style, i.color, i.size FROM customer c, catalog i WHERE c.id = ? AND i.id = ?");
+			ResultSet rs = s.executeQuery("SELECT id, customer_id, item_id, quantity, sale_price, created FROM sales");
+			while (rs.next()) {
+				int salesId = rs.getInt(1);
+				int customerId = rs.getInt(2);
+				int itemId = rs.getInt(3);
+				int quantity = rs.getInt(4);
+				double salePrice = rs.getDouble(5);
+				Timestamp ts = rs.getTimestamp(6);
+				ps.setInt(1, customerId);
+				ps.setInt(2, itemId);
+				ResultSet rs2 = ps.executeQuery();
+				while (rs2.next()) {
+					String lName = rs2.getString(1);
+					String fName = rs2.getString(2);
+					String style = rs2.getString(3);
+					String color = rs2.getString(4);
+					String size = rs2.getString(5);
+					sb.append("Customer: " + lName + ", " + fName + " Item: " + color + " " + style + ", " + size + " Quantity: " + quantity + " Price: " + salePrice + "\n");
+					//sb.append("Customer: " + rs2.getString(1) + ", " + rs2.getString(2) + "Item: " + rs2.getString(3) + ts.toString());
+				}
+			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return sb.toString();
 	}
 	
-	//protected void getSalesForMonth()
+	protected String csvAllSales() {
+		StringBuffer sb = new StringBuffer();
+		try {
+			Statement s = c.createStatement();
+			PreparedStatement ps = c.prepareStatement("SELECT c.last_name, c.first_name, i.style, i.color, i.size FROM customer c, catalog i WHERE c.id = ? AND i.id = ?");
+			ResultSet rs = s.executeQuery("SELECT id, customer_id, item_id, quantity, sale_price, created FROM sales");
+			while (rs.next()) {
+				int salesId = rs.getInt(1);
+				int customerId = rs.getInt(2);
+				int itemId = rs.getInt(3);
+				int quantity = rs.getInt(4);
+				double salePrice = rs.getDouble(5);
+				Timestamp ts = rs.getTimestamp(6);
+				ps.setInt(1, customerId);
+				ps.setInt(2, itemId);
+				ResultSet rs2 = ps.executeQuery();
+				while (rs2.next()) {
+					String lName = rs2.getString(1);
+					String fName = rs2.getString(2);
+					String style = rs2.getString(3);
+					String color = rs2.getString(4);
+					String size = rs2.getString(5);
+					sb.append(lName + ":" + fName + ":" + color + ":" + style + ":" + size + ":" + quantity + ":" + salePrice + "\n");
+					//sb.append("Customer: " + rs2.getString(1) + ", " + rs2.getString(2) + "Item: " + rs2.getString(3) + ts.toString());
+				}
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return sb.toString();
+	}
 }
