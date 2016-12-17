@@ -13,7 +13,7 @@ import java.io.*;
 class ThreadGUI extends JPanel { // Begin ThreadGUI Class
     
     private static Controller c;
-    JLabel blankLabel = new JLabel();
+    JLabel blankLabel = new JLabel("");
     JButton inventoryButton, customerButton, customerSearchButton, 
             catalogSearchButton, addCustomerButton, addClothingButton,
             loadInventoryButton, SalesMonthButton, SalesAllButton, bestsellersButton, 
@@ -28,6 +28,8 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
     boolean isPressedCustomer, isPressedInventory, isPressedSales, isPressedMoSales, 
             isPressedBest = false;
     static boolean addedToDatabase = false;
+    JTextField totalText = new JTextField (6);
+    JComboBox customerBox = new JComboBox();
     int customerId;
     
     public ThreadGUI(Controller c){ //begin constructor
@@ -97,6 +99,10 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         @Override
         public void actionPerformed(ActionEvent e){displayAllInvenReport ();}});
         
+        SalesAllButton.addActionListener(al -> {
+        	displayAllSales();
+        });
+        
         displayAllInvenButton.addActionListener(new ActionListener(){ 
         @Override
         public void actionPerformed(ActionEvent e){displayAllInven ();}});
@@ -148,7 +154,7 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         JPanel pane = new JPanel();//Main Panel, its like a tree.  Sub  panel to sub panel
             JComponent component = new JPanel();
             JComponent centerComponent = new JPanel();
-                JComponent centerCatalogComponent = new JPanel();
+                JComponent centerCustomerComponent = new JPanel();
                 JComponent bottomComponent = new JPanel();
             JComponent rightComponent = new JPanel();
                 JComponent rightCartComponent = new JPanel();
@@ -164,6 +170,10 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         JLabel addCustomerLabel = new JLabel("       Add New Customer");
         JLabel searchCustomerLabel = new JLabel("       Search by Name");
         JLabel customerIDLabel = new JLabel(" Enter Customer ID to Delete");
+        JLabel blank = new JLabel("");
+        JLabel blank1 = new JLabel("");
+        JLabel blank2 = new JLabel("");
+        JLabel blank3 = new JLabel("");
         lastNameText = new JTextField(6);
         firstNameText = new JTextField(6);
         addressText = new JTextField(6);
@@ -174,18 +184,18 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         addCustomerButton = new JButton("Add");
         deleteCustomerButton = new JButton("Delete");
         customerSearchButton = new JButton(" Search ");
-        customerLog = new JTextArea(20,40);
+        customerLog = new JTextArea(10,20);
         customerLog.setMargin(new Insets(5,5,5,5));
         customerLog.setEditable(false); 
         JScrollPane shoppingCart = new JScrollPane(customerLog);
         //dimensions of containers
-        Dimension size = new Dimension(800,300);
+        Dimension size = new Dimension(800,500);
         Dimension size2 = new Dimension (500,300);
         component.setPreferredSize(size);
         //Adjusting Layouts of components
         component.setLayout(new BorderLayout());//layout of main container
             centerComponent.setLayout(new BorderLayout());// Center sub container
-                centerCatalogComponent.setLayout(new GridLayout(6, 2));
+                centerCustomerComponent.setLayout(new GridLayout(9, 2));
                 bottomComponent.setLayout(new FlowLayout());
             rightComponent.setPreferredSize(size2);
             rightComponent.setLayout(new BorderLayout());
@@ -204,25 +214,27 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         pane.setBackground(new Color(255,234,206));
         pane.add(component);
             component.add(centerComponent, BorderLayout.CENTER);
-                centerComponent.add(centerCatalogComponent, BorderLayout.CENTER);
+                centerComponent.add(centerCustomerComponent, BorderLayout.CENTER);
                 centerComponent.add(bottomComponent, BorderLayout.PAGE_END);
                     bottomComponent.add(addCustomerButton);
                     bottomComponent.setBackground(new Color(255,245,230));
                 centerComponent.add(addCustomerLabel, BorderLayout.PAGE_START);
                 centerComponent.setBackground(new Color(255,245,230));
-                    centerCatalogComponent.setBackground(new Color(255,245,230));
-                    centerCatalogComponent.add(lastNameLabel);
-                    centerCatalogComponent.add(lastNameText);
-                    centerCatalogComponent.add(firstNameLabel);
-                    centerCatalogComponent.add(firstNameText);
-                    centerCatalogComponent.add(addressLabel);
-                    centerCatalogComponent.add(addressText);
-                    centerCatalogComponent.add(emailLabel);
-                    centerCatalogComponent.add(emailText);
-                    centerCatalogComponent.add(phoneLabel);
-                    centerCatalogComponent.add(phoneText);
-                    centerCatalogComponent.add(blankLabel);
-                    centerCatalogComponent.add(blankLabel);
+                    centerCustomerComponent.setBackground(new Color(255,245,230));
+                    centerCustomerComponent.add(blank);
+                    centerCustomerComponent.add(blank1);
+                    centerCustomerComponent.add(lastNameLabel);
+                    centerCustomerComponent.add(lastNameText);
+                    centerCustomerComponent.add(firstNameLabel);
+                    centerCustomerComponent.add(firstNameText);
+                    centerCustomerComponent.add(addressLabel);
+                    centerCustomerComponent.add(addressText);
+                    centerCustomerComponent.add(emailLabel);
+                    centerCustomerComponent.add(emailText);
+                    centerCustomerComponent.add(phoneLabel);
+                    centerCustomerComponent.add(phoneText);
+                    centerCustomerComponent.add(blank2);
+                    centerCustomerComponent.add(blank3);
             component.add(rightComponent, BorderLayout.LINE_END);
                 rightComponent.add(searchCustomerLabel, BorderLayout.PAGE_START);
                 rightComponent.add(rightCartComponent, BorderLayout.CENTER);
@@ -262,6 +274,8 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         JLabel addClothingLabel = new JLabel("       Adding Catalog Item");
         JLabel searchClothingLabel = new JLabel("       Item Search by Style or Color ");
         JLabel catalogIDLabel = new JLabel(" Enter SKU to Delete");
+        JLabel blank = new JLabel("");
+        JLabel blank1 = new JLabel("");
         styleText = new JTextField(6);
         colorText = new JTextField(6);
         sizeText = new JTextField(6);
@@ -274,19 +288,19 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         addClothingButton = new JButton("Add");
         deleteClothingButton = new JButton("Delete");
         catalogSearchButton = new JButton(" Search ");
-        catalogLog = new JTextArea(20,40);
+        catalogLog = new JTextArea(10,20);
         catalogLog.setMargin(new Insets(5,5,5,5));
         catalogLog.setEditable(false); 
         loadInventoryButton = new JButton ("Load from File");
         JScrollPane shoppingCart = new JScrollPane(catalogLog);
         //dimensions of containers
-        Dimension size = new Dimension(800,375);
+        Dimension size = new Dimension(800,500);
         Dimension size2 = new Dimension (500,375);
         component.setPreferredSize(size);
         //Adjusting Layouts of components
         component.setLayout(new BorderLayout());//layout of main container
             centerComponent.setLayout(new BorderLayout());// Center sub container
-                centerCustomerComponent.setLayout(new GridLayout(8, 2));
+                centerCustomerComponent.setLayout(new GridLayout(9, 2));
                 centerBottomComponent.setLayout(new FlowLayout());
             rightComponent.setPreferredSize(size2);
             rightComponent.setLayout(new BorderLayout());
@@ -312,6 +326,8 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
                     centerBottomComponent.add(loadInventoryButton);
                     centerBottomComponent.setBackground(new Color(255,245,230));
                 centerComponent.add(addClothingLabel, BorderLayout.PAGE_START);
+                    centerCustomerComponent.add(blank);
+                    centerCustomerComponent.add(blank1);
                     centerCustomerComponent.add(skuLabel);
                     centerCustomerComponent.add(skuText);
                     centerCustomerComponent.add(styleLabel);
@@ -372,10 +388,14 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         JLabel quantityLabel1 = new JLabel("Quantity:");
         JLabel totalLabel= new JLabel(" Total:  ");
         JLabel salesColorLabel = new JLabel("Color:");
-        //JTextField customerText = new JTextField(6);
-        JComboBox customerBox = new JComboBox();
+        JLabel blank = new JLabel("");
+        JLabel blank1 = new JLabel("");
+        JLabel blank2 = new JLabel("");
+        JLabel blank3 = new JLabel("");
+        //JComboBox customerBox = new JComboBox(); //Moved this so adding a customer will refresh this -JJ
         
         customerBox.setModel(new DefaultComboBoxModel(c.getAllCustomers().toArray()));
+        
         JComboBox itemBox = new JComboBox();
         
         JComboBox sizeBox = new JComboBox();
@@ -393,10 +413,10 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         //colorBox.setModel(new DefaultComboBoxModel(c.getColorsForSelectedItemAndSize(itemBox.getSelectedItem().toString(), sizeBox.getSelectedItem().toString()).toArray()));
         //JTextField costText = new JTextField(6);
         JTextField quantityText = new JTextField(6);
-        JTextField totalText = new JTextField (6);
+        //JTextField totalText = new JTextField (6); //Moved so cancel method will reset this - JJ
         JButton addSaleButton = new JButton("Add to Cart");
         cancelButton = new JButton("Cancel Sale");
-        salesLog = new JTextArea(20,40);
+        salesLog = new JTextArea(10,20);
         salesLog.setMargin(new Insets(5,5,5,5));
         salesLog.setEditable(false);
         JScrollPane shoppingCart = new JScrollPane(salesLog);
@@ -420,14 +440,14 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         	salesLog.setText("Sale Completed!");
         });
         //dimension of main component container
-        Dimension size = new Dimension(800,325);
+        Dimension size = new Dimension(800,500);
         Dimension size2 = new Dimension (500, 225);
         component.setPreferredSize(size);
         //Adjusting Layouts of components
         component.setLayout(new BorderLayout());//layout of main container
             centerComponent.setLayout(new BorderLayout());// Center sub container
                 bottomComponent.setLayout(new FlowLayout());
-                centerSalesComponent.setLayout(new GridLayout(7, 2));
+                centerSalesComponent.setLayout(new GridLayout(9, 2));
             rightComponent.setPreferredSize(size2);
             rightComponent.setLayout(new BorderLayout());
                 rightCartComponent.setLayout(new BorderLayout());
@@ -451,6 +471,8 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
                     bottomComponent.setBackground(new Color(255,245,230));
                 centerComponent.add(addSaleLabel, BorderLayout.PAGE_START);
                 centerComponent.setBackground(new Color(255,245,230));
+                    centerSalesComponent.add(blank);
+                    centerSalesComponent.add(blank1);
                     centerSalesComponent.add(customerLabel);
                     centerSalesComponent.add(customerBox);
                     centerSalesComponent.add(itemLabel);
@@ -464,10 +486,8 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
                     //centerSalesComponent.add(costText);
                     centerSalesComponent.add(quantityLabel);
                     centerSalesComponent.add(quantityText);
-                    centerSalesComponent.add(blankLabel);
-                    centerSalesComponent.add(blankLabel);
-                    centerSalesComponent.add(blankLabel);
-                    centerSalesComponent.add(blankLabel);
+                    centerSalesComponent.add(blank2);
+                    centerSalesComponent.add(blank3);
                     centerSalesComponent.setBackground(new Color(255,245,230));
             component.add(rightComponent, BorderLayout.LINE_END);
                 rightComponent.add(addCartLabel, BorderLayout.PAGE_START);
@@ -512,9 +532,10 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         //dimension of main component container
         Dimension size = new Dimension(800,500);
         Dimension sizeMax = new Dimension (1000, 700);
+        Dimension sizeMin = new Dimension (500, 300);
         component.setMaximumSize(sizeMax);
         component.setPreferredSize(size);
-        component.setMinimumSize(size);
+        component.setMinimumSize(sizeMin);
         //adjusting layouts
         component.setLayout(new BorderLayout());//layout of main container
         topComponent.setLayout(new FlowLayout());//layout of subcontainer
@@ -591,9 +612,9 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
                 topComponent.add(displayLabel);
                 topComponent.add(inventoryButton);
                 topComponent.add(customerButton);
-                topComponent.add(SalesMonthButton);
+                //topComponent.add(SalesMonthButton);
                 topComponent.add(SalesAllButton);
-                topComponent.add(bestsellersButton);
+                //topComponent.add(bestsellersButton);
                 topComponent.setBackground(new Color(255,245,230));
             component.add(bottomComponent, BorderLayout.PAGE_END);
                 bottomComponent.add(reportLabel);
@@ -670,6 +691,7 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         //cancel button code.
         salesLog.setText("Transaction Cancelled");
         c.cancelCart(customerId);
+        totalText.setText("");;
     }
     void changeInvenQuantity (){        
     	long sku = Long.parseLong(skuInvenText.getText());
@@ -727,6 +749,19 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
                     + "Ex. 3818494081");
         }
     }
+    
+    void displayAllSales() {
+    	String salesData = c.displayAllSales();
+    	reportLog.setText(salesData);
+        isPressedInventory = false;
+        isPressedCustomer = false;
+        isPressedSales = true;
+        //isPressedMoSales = false; 
+        //isPressedBest = false;
+    
+    }
+    
+    
     void exportReport (){
         if (isPressedInventory == true){
             JOptionPane.showMessageDialog(null, "Select a location to save the inventory"
@@ -743,7 +778,7 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
                         fw.write(item.toStringReport() + "\n");
                 }
                 fw.close();
-                
+                JOptionPane.showMessageDialog(null, "Report Saved");
             }   catch (IOException e){
                 e.printStackTrace();
             }
@@ -766,23 +801,44 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
                         fw.write(customer.toStringReport() + "\n");
                 }
                 fw.close();
+                JOptionPane.showMessageDialog(null, "Report Saved");
             }   catch (IOException e){
                 e.printStackTrace();
             }
-            isPressedInventory = false;
+            isPressedCustomer = false;
             } else {
                 reportLog.append("\n\nCancelled File Open ");
             }
         } else if (isPressedSales == true){
-            System.out.println("Export All Sales");
+            JOptionPane.showMessageDialog(null, "Select a location to save the Sales"
+                    + " report as a .csv file.");
+            chooser = new JFileChooser();
+            int returnVal = chooser.showSaveDialog(this);
+            if (returnVal == JFileChooser.APPROVE_OPTION){
+                try{
+                    String sales = c.csvAllSales();
+                    FileWriter fw = new FileWriter(chooser.getSelectedFile()+".csv");
+                    fw.write("LastName:FirstName:Color:Size:Quantity:SalePrice\n");
+                    fw.write(sales);
+                    fw.close();
+                    JOptionPane.showMessageDialog(null, "Report Saved");
+                }   catch (IOException e){
+                    e.printStackTrace();
+                }
             isPressedSales = false;
-        } else if (isPressedMoSales == true){
-            System.out.println("Export Monthly Sales");
-            isPressedMoSales = false;
-        } else if (isPressedBest == true){
-            System.out.println("Export BestSellers");
-            isPressedBest = false;
-        } else{
+            } else {
+                reportLog.append("\n\nCancelled File Open ");
+            }                      
+        } 
+//        else if (isPressedMoSales == true){
+//            System.out.println("Export Monthly Sales");
+//            isPressedMoSales = false;
+//        } 
+//        else if (isPressedBest == true){
+//            System.out.println("Export BestSellers");
+//            isPressedBest = false;
+//        } 
+        else{
             JOptionPane.showMessageDialog(null, "Please select a report to export first");
         }  
     }
@@ -791,7 +847,7 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         isPressedCustomer = false;
         isPressedSales = false;
         isPressedMoSales = false; 
-        isPressedBest = false;
+//        isPressedBest = false;
         List<Item> allItems = c.getAllItems();
     	reportLog.setText("\nAll Items:\n");
     	for (Item item : allItems) {
@@ -810,7 +866,7 @@ class ThreadGUI extends JPanel { // Begin ThreadGUI Class
         isPressedCustomer = true;
         isPressedSales = false;
         isPressedMoSales = false; 
-        isPressedBest = false;
+//        isPressedBest = false;
     	List<Customer> customers = c.getAllCustomers();
         reportLog.setText("\nAll Customers:\n");
     	for (Customer customer : customers) {

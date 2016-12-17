@@ -81,6 +81,8 @@ class ThreadCount {// Begin class ThreadCount
     	*/
     	Controller c = new Controller(); // See notes in ThreadGUI's constructor -JJ
     	
+    	//
+    	
         ThreadGUI frame = new ThreadGUI(c);
         frame.createGUI();
         //ThreadGUI.createGUI(); // Commented this out, threw the above line in -JJ

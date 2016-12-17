@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.sql.*;
 import java.util.ArrayList;
+
 import javax.swing.JOptionPane;
 
 public class Controller {
@@ -242,7 +243,8 @@ public class Controller {
 			for (Item i : cart.items) {
 				int quantity = cart.cartMap.get(i);
 				ps.setInt(1, quantity);
-				ps.setInt(2, customerId);
+				ps.setInt(2, i.id);
+				ps.executeUpdate();
 			}
 			cart.items.clear();
 			cart.cartMap.clear();
@@ -495,5 +497,71 @@ public class Controller {
                 } else {
                         JOptionPane.showMessageDialog(null, "SKU " + sku +" Not Found");
                 }
+	}
+	
+	protected String displayAllSales() {
+		StringBuffer sb = new StringBuffer();
+		try {
+			Statement s = c.createStatement();
+			PreparedStatement ps = c.prepareStatement("SELECT c.last_name, c.first_name, i.style, i.color, i.size FROM customer c, catalog i WHERE c.id = ? AND i.id = ?");
+			ResultSet rs = s.executeQuery("SELECT id, customer_id, item_id, quantity, sale_price, created FROM sales");
+			while (rs.next()) {
+				int salesId = rs.getInt(1);
+				int customerId = rs.getInt(2);
+				int itemId = rs.getInt(3);
+				int quantity = rs.getInt(4);
+				double salePrice = rs.getDouble(5);
+				Timestamp ts = rs.getTimestamp(6);
+				ps.setInt(1, customerId);
+				ps.setInt(2, itemId);
+				ResultSet rs2 = ps.executeQuery();
+				while (rs2.next()) {
+					String lName = rs2.getString(1);
+					String fName = rs2.getString(2);
+					String style = rs2.getString(3);
+					String color = rs2.getString(4);
+					String size = rs2.getString(5);
+					sb.append("Customer: " + lName + ", " + fName + " Item: " + color + " " + style + ", " + size + " Quantity: " + quantity + " Price: " + salePrice + "\n");
+					//sb.append("Customer: " + rs2.getString(1) + ", " + rs2.getString(2) + "Item: " + rs2.getString(3) + ts.toString());
+				}
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return sb.toString();
+	}
+	
+	protected String csvAllSales() {
+		StringBuffer sb = new StringBuffer();
+		try {
+			Statement s = c.createStatement();
+			PreparedStatement ps = c.prepareStatement("SELECT c.last_name, c.first_name, i.style, i.color, i.size FROM customer c, catalog i WHERE c.id = ? AND i.id = ?");
+			ResultSet rs = s.executeQuery("SELECT id, customer_id, item_id, quantity, sale_price, created FROM sales");
+			while (rs.next()) {
+				int salesId = rs.getInt(1);
+				int customerId = rs.getInt(2);
+				int itemId = rs.getInt(3);
+				int quantity = rs.getInt(4);
+				double salePrice = rs.getDouble(5);
+				Timestamp ts = rs.getTimestamp(6);
+				ps.setInt(1, customerId);
+				ps.setInt(2, itemId);
+				ResultSet rs2 = ps.executeQuery();
+				while (rs2.next()) {
+					String lName = rs2.getString(1);
+					String fName = rs2.getString(2);
+					String style = rs2.getString(3);
+					String color = rs2.getString(4);
+					String size = rs2.getString(5);
+					sb.append(lName + ":" + fName + ":" + color + ":" + style + ":" + size + ":" + quantity + ":" + salePrice + "\n");
+					//sb.append("Customer: " + rs2.getString(1) + ", " + rs2.getString(2) + "Item: " + rs2.getString(3) + ts.toString());
+				}
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return sb.toString();
 	}
 }
