@@ -21,12 +21,13 @@ public class Config extends JFrame {
 	protected String dbPass = "countz";
 	*/
 	
-	protected String dbHost = "54.226.6.195";
+        protected String dbHost = "threadcounts.cjxcxfnklzes.us-east-1.rds.amazonaws.com";
+//	protected String dbHost = "54.226.6.195";
 	protected int dbPort = 3306;
 	protected String dbName = "threadcounts";
 	protected String dbUser = "threadDELETEME";
-	//protected String dbPass = "Thp3@dC0untz";
-	protected String dbPass = "Thp3@dC0untz";
+	//protected String dbPass = "Thp3@dC0untz";  //old pass
+	protected String dbPass = "Thp3adC0untz";  //current pass
 	
 	protected boolean ok = false;
 
@@ -42,7 +43,7 @@ public class Config extends JFrame {
 	protected JTextField txtPort = new JTextField(20);
 	protected JTextField txtUser = new JTextField(20);
 	protected JTextField txtPass = new JTextField(20);
-	protected JPasswordField passField = new JPasswordField("Thp3@dC0untz");
+	protected JPasswordField passField = new JPasswordField("Thp3adC0untz");
 	
 	
 	
